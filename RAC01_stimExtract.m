@@ -5,12 +5,14 @@ clc;
 % Declare paths
 pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
 
-Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot06'};
+Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot05'; 'Pilot06'; 'Pilot07'; 'Pilot08'; 'Pilot09'};
 Sessions     = {'01'; '02'};
-Conditions   = {'stimWalkST'; 'stimRestDT'; 'stimWalkDT'; 'stimTapDT';...
-                'syncWalkST'; 'syncWalkDT'; 'syncTapDT'};
+Conditions   = {'stimRestST'; 'stimTapST'; 'stimWalkST';...
+                'stimRestDT'; 'stimTapDT'; 'stimWalkDT';...
+                'syncTapST'; 'syncWalkST';...
+                'syncTapDT'; 'syncWalkDT'};
             
-for iParticipant = 1:length(Participants)
+for iParticipant = length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -20,9 +22,11 @@ for iParticipant = 1:length(Participants)
 
         if ~exist(pathExport, 'dir')
             mkdir(pathExport)
+        elseif exist([pathExport 'dataRAC.mat'], 'file')
+            load([pathExport 'dataRAC.mat'])
         end
 
-        for iCondition = 1:length(Conditions)
+        for iCondition = 1:length(Conditions) 
 
             % Load data
             load([pathImport '/Audio/' Conditions{iCondition} '.mat'])
@@ -37,7 +41,7 @@ for iParticipant = 1:length(Participants)
             end
             
             % Extact audio data from structure
-            Audio = Data.([Conditions{iCondition}]).Analog.Data;
+            Audio = Data.([Conditions{iCondition}]).Analog.Data(1,1:Freq*60*5);
 
             % Extract beat frequency, BPM, and IOI
             [beatFreq, BPM, IOI, beatOnset] = getBeat(Audio, Freq, preferredBPM);

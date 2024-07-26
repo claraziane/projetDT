@@ -32,8 +32,8 @@ envFilt = filtfilt(f,e,abs(audioEnv));
 % plot(envFilt)
 
 % Find envelop peaks
-peakThreshold = 0.05;
-[pksFilt, locsFilt] = findpeaks(envFilt);% plot(locsFilt, envFilt(locsFilt), 'r*')
+peakThreshold = 0.1;
+[pksFilt, locsFilt] = findpeaks(envFilt); %plot(locsFilt, envFilt(locsFilt), 'r*')
 
 % Only keep one peak per beat
 locsFilt(pksFilt < peakThreshold) = [];
@@ -41,18 +41,25 @@ pksFilt(pksFilt < peakThreshold)  = [];
 pksFilt = envFilt(locsFilt);
 
 % Find peaks corresponding to beat onsets
-minPeak = 0;
+minPeak =  -0.01;
+peakThreshold = 0.01;
 [pks,locs] = findpeaks(audioInv, 'MinPeakHeight', minPeak);
 
 beatOnset = []; beatValue = [];
 singleIndex = 1;
 for iPksFilt = 2:length(pksFilt)
-    nPeaks = 200; %Number of peaks to include before trigger
+    nPeaks = 100; %Number of peaks to include before trigger
     [M, I] = min(abs(locs-locsFilt(iPksFilt)));
     singleIndex = singleIndex+1;
-    tempBeat = audioEnv(locs(I-nPeaks:I));
+    tempBeat = audioInv(locs(I-nPeaks:I));
     tempFrames = locs(I-nPeaks:I);
     beatRound = round(tempBeat,3);
+    
+    % beatRound must be in one column
+    if size(beatRound,1) == 1
+        beatRound = beatRound';
+    end
+
     if beatRound(1) > 0
         for iBeatRound = 1:length(beatRound)
             if beatRound(iBeatRound) <= peakThreshold && beatRound(iBeatRound+1) <= peakThreshold
@@ -66,7 +73,7 @@ for iPksFilt = 2:length(pksFilt)
     end
     beatRound(beatRound<peakThreshold) = 0;
     beatRound(beatRound>=peakThreshold) = 1;
-    plot(tempFrames, Audio(tempFrames), 'k*')
+%     plot(tempFrames, Audio(tempFrames), 'k*')
 
     for i = 2:length(beatRound)-1
         if beatRound(i) == 0 && beatRound(i+1) == 1
@@ -75,6 +82,7 @@ for iPksFilt = 2:length(pksFilt)
             end
         end
     end
+    beatRound(end) = 1;
 
      for i = 2:length(beatRound)-1
         if beatRound(i) == 1 && beatRound(i+1) == 0
@@ -85,8 +93,8 @@ for iPksFilt = 2:length(pksFilt)
     end
 
     for i = 1:length(beatRound)-1
-        if beatRound(i) == 0 && mean(beatRound(i+1:end)) == 1
-            tempFrames(1:i-1) = [];
+        if beatRound(i) == 1 && mean(beatRound(1:i-1)) == 0
+            tempFrames(1:i-2) = [];
             break;
         end
     end
@@ -112,12 +120,11 @@ plot(beatOnset, beatValue, 'r*')
 % Extract metronome IOI, frequency & BPM
 [beatOnsetUnique iRepeat] = unique(beatOnset);
 beatDiff = diff(iRepeat);
-beatOnset(beatDiff>1) = [];
-beatValue(beatDiff>1) = [];
-
-IOI = diff(beatOnset);
+beatOnset = beatOnsetUnique;
+beatValue = Audio(beatOnset);
 
 % Make sure no beat is missing
+IOI = diff(beatOnset);
 for iIOI = 1:length(IOI)-1
     if IOI(iIOI) > mean(IOI) + 50
         warning([' !!! Seems like at least one beat is missing around frame number ' num2str(beatOnset(iIOI)) '!!']);
@@ -140,7 +147,7 @@ for iIOI = 1:length(IOI)-1
 
     elseif IOI(iIOI) < mean(IOI) - 50
         warning([' !!! Seems like there are too many beats around frame number ' num2str(beatOnset(iIOI)) '!!']);
-
+        
         Action = input('Do you want to replace beat [1], remove beat [2], or do nothing [0] ?');
         if Action == 0
         elseif Action == 1

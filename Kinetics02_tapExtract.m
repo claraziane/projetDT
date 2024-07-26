@@ -1,0 +1,64 @@
+clear all; 
+close all;
+clc;
+
+% Declare paths
+pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
+
+Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot05'; 'Pilot06'; 'Pilot07'; 'Pilot08'; 'Pilot09'; 'Pilot10'};
+Sessions     = {'01'; '02'};
+Conditions   = {'testTap';
+                'noneTapST';
+                'stimTapST'; 'stimTapDT';...
+                'syncTapST'; 'syncTapDT'};
+            
+for iParticipant = length(Participants)
+
+    for iSession = 1%:length(Sessions)
+
+        % Declare paths
+        pathImport = ([pathData 'RAW/' Participants{iParticipant} '/' Sessions{iSession} '/QTM/']);
+        pathExport = ([pathData 'Processed/' Participants{iParticipant} '/' Sessions{iSession} '/Behavioural/']);
+
+        if ~exist(pathExport, 'dir')
+            mkdir(pathExport)
+        elseif exist([pathExport 'dataTap.mat'], 'file')
+            load([pathExport 'dataTap.mat'])
+        end
+
+        for iCondition = 1%1:length(Conditions)
+
+            Data  = load([pathImport Conditions{iCondition} '.mat']);
+            Freq  = Data.(Conditions{iCondition}).Analog.Frequency;
+
+            if strcmpi(Conditions{iCondition}(1:4), 'test')
+                Time = Freq*60*1;
+            else
+                Time = Freq*60*5;
+            end
+
+            % Extact tap data from structure
+            tapData = Data.(Conditions{iCondition}).Analog.Data(2,1:Time);
+
+            % Extract tap onsets
+            [tapOnset, tapFreq, ITI, tapCadence] = getTaps(tapData, Freq);
+
+            % Store data in structure
+            Taps.([Conditions{iCondition}]).tapOnset(:,1) = tapOnset;   % Store tap onsets in structure
+            Taps.([Conditions{iCondition}]).tapFreq(1,1)  = tapFreq;    % Store tap frequency in structure
+            Taps.(Conditions{iCondition}).cadence         = tapCadence; % Store number of taps per minute in structure
+            Taps.([Conditions{iCondition}]).ITI(:,1)      = ITI;        % Store inter-tap interval in structure
+            Taps.(Conditions{iCondition}).sampFreq        = Freq;
+            
+            % Save structure
+            save([pathExport 'dataTap.mat'], 'Taps');
+
+            clear tapData tapOnset Data
+            close all;
+
+        end
+        clear Taps
+
+    end %Sessions
+
+end %Participants

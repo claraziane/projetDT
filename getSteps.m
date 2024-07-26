@@ -17,85 +17,119 @@ function [stepOnsets] = getSteps(Kinetics, Freq)
 %% Right foot
 
 % Normalize forces
+Kinetics = Kinetics(~isnan(Kinetics));
 Kinetics = Kinetics-mean(Kinetics);
 Kinetics = (Kinetics/max(Kinetics))*100;
 
 figure; plot(Kinetics); title('Force Plate Data'); hold on;
 
+% Low-pass filter audio signal at 5 Hz to get signal envelop
+[f,e] = butter(2,4*10/Freq);
+kineticFilt = filtfilt(f,e,Kinetics);
+% plot(kineticFilt)
+
 % Find envelop peaks
-peakThreshold = 40;
-[pksKin, locsKin] = findpeaks(Kinetics);
+peakThreshold = 40; %40
+[pksFilt, locsFilt] = findpeaks(kineticFilt);
 
 % Find first stepOnset and remove peaks before first stepOnset
-[minPks, minIndexPks] = min(pksKin(1:3));
-if minIndexPks > 1
-    locsKin(1:minIndexPks-1) = [];
-    pksKin(1:minIndexPks-1) = [];
+[minPksFilt, minIndexPksFilt] = min(pksFilt(1:3));
+if minIndexPksFilt > 1
+    locsFilt(1:minIndexPksFilt-1) = [];
+    pksFilt(1:minIndexPksFilt-1) = [];
 end
 
 % Only keep one peak per step
-pksTemp = pksKin;
-pksTemp(pksKin < peakThreshold) = 0;
-pksTemp(pksKin > peakThreshold) = 1;
+pksFiltTemp = pksFilt;
+pksFiltTemp(pksFilt < peakThreshold) = 0;
+pksFiltTemp(pksFilt > peakThreshold) = 1;
 pks2Keep = [];
 
 % if one zero value is missing
 pksSingle = [];
-for iPks = 1:length(pksKin)-3
-    if mean(pksTemp(iPks:iPks+3)) == 1
-        pksTemp(iPks+3:end+1) = pksTemp(iPks+2:end);
-        pksTemp(iPks+2) = 0;
+for iPksFilt = 1:length(pksFilt)-3
+    if mean(pksFiltTemp(iPksFilt:iPksFilt+3)) == 1
+        pksFiltTemp(iPksFilt+3:end+1) = pksFiltTemp(iPksFilt+2:end);
+        pksFiltTemp(iPksFilt+2) = 0;
 
-        pksKin(iPks+3:end+1) = pksKin(iPks+2:end);
-        pksKin(iPks+2) = 0;
+        pksFilt(iPksFilt+3:end+1) = pksFilt(iPksFilt+2:end);
+        pksFilt(iPksFilt+2) = 0;
 
-        locsKin(iPks+3:end+1) = locsKin(iPks+2:end);
-        locsKin(iPks+2) = locsKin(iPks+2)-1;
-    elseif pksTemp(iPks) == 1 && pksTemp(iPks-1) == 0 && pksTemp(iPks+1) == 0
-        pksSingle = [pksSingle; locsKin(iPks)];
+        locsFilt(iPksFilt+3:end+1) = locsFilt(iPksFilt+2:end);
+        locsFilt(iPksFilt+2) = locsFilt(iPksFilt+2)-1;
+    elseif pksFiltTemp(iPksFilt) == 1 && pksFiltTemp(iPksFilt-1) == 0 && pksFiltTemp(iPksFilt+1) == 0
+        pksSingle = [pksSingle; locsFilt(iPksFilt)];
     end
 end
 
-for iPks = 1:length(pksKin)
-    if pksTemp(iPks) == 0 && iPks ~= length(pksKin)
-        pks2Keep = [pks2Keep; iPks+1];
+for iPksFilt = 1:length(pksFilt)
+    if pksFiltTemp(iPksFilt) == 0 && iPksFilt ~= length(pksFilt)
+        pks2Keep = [pks2Keep; iPksFilt+1];
     end
 end
-locsKin = locsKin(pks2Keep);
-pksKin = pksKin(pks2Keep);
+locsFilt = locsFilt(pks2Keep);
+pksFilt = pksFilt(pks2Keep);
 
 % Remove peaks below peakThreshold
-locsKin(pksKin < peakThreshold) = [];
-pksKin(pksKin < peakThreshold) = [];
-% plot(locsKin, Kinetics(locsKin), 'b*')
+locsFilt(pksFilt < peakThreshold) = [];
+pksFilt(pksFilt < peakThreshold) = [];
+% plot(locsFilt, kineticFilt(locsFilt), 'b*')
 
-% Find peaks corresponding to step onsets
-minPeak = 40;
+% Find peaks corresponding to beat onsets
+minPeak = -50;
+[pks,locs] = findpeaks(Kinetics, 'MinPeakHeight', minPeak);
 
 stepOnsets = []; stepValues = [];
-for iPks = 1:length(pksKin)
-    
-    iFrame = locsKin(iPks);
-    while Kinetics(iFrame) > Kinetics(iFrame-1)
-        iFrame = iFrame -1;
-
-        if Kinetics(iFrame) <= 0
-            diffKin = flip(diff(Kinetics(locsKin(iPks)-10:locsKin(iPks))));
-            
-            for iDiff = 1:length(diffKin)
-                iFrame = locsKin(iPks) - iDiff;
-
-                if diffKin(iDiff) >= diffKin(iDiff+1) && Kinetics(iFrame) < minPeak
-                    break;
-                end
-            end
-            break;
-
-        end
-        
+singleIndex = 1;
+for iPksFilt = 2:length(pksFilt)
+    nPeaks = 70; %Number of peaks to include before trigger
+    [M, I] = min(abs(locs-locsFilt(iPksFilt)));
+    if iPksFilt == 1 && I < nPeaks
+        nPeaks = I-1;
+    elseif ~isempty(pksSingle) && singleIndex <= length(pksSingle) && locsFilt(iPksFilt) == pksSingle(singleIndex)
+        nPeaks = nPeaks*2; %*2
+        singleIndex = singleIndex+1;
     end
-    stepOnsets = [stepOnsets; iFrame];
-    stepValues = [stepValues; Kinetics(iFrame)];
+    tempKinetic = Kinetics(locs(I-nPeaks:I));
+    tempFrames = locs(I-nPeaks:I);
+    kineticRound = round(tempKinetic,1);
+    if kineticRound(1) > 0
+        for iKineticRound = 1:length(kineticRound)
+            if kineticRound(iKineticRound) <= 0 && kineticRound(iKineticRound+1) <= 0
+                kineticRoundIndex = iKineticRound-1;
+                break;
+            end
+        end
+%         exist kineticRoundIndex
+%         if ans == 0
+%             kineticRoundIndex = 2;
+%         end
+        kineticRound(1:kineticRoundIndex) = [];
+        tempFrames(1:kineticRoundIndex)   = [];
+        tempKinetic(1:kineticRoundIndex) = [];
+
+    end
+    kineticRound(kineticRound<=peakThreshold) = 0;
+    kineticRound(kineticRound>peakThreshold) = 1;
+    plot(tempFrames, tempKinetic, 'k*')
+
+    for i = 1:length(kineticRound)-1
+        if kineticRound(i) == 0 && mean(kineticRound(i+1:end)) == 1
+            tempFrames(1:i-1) = [];
+            break;
+        end
+    end
+    if mean(kineticRound) == 1
+        [maxTempKinetic, indexTempKinetic] = max(abs(diff(tempKinetic)));
+        tempFrames(2) = tempFrames(indexTempKinetic+1);
+    end
+
+    kineticIndex = tempFrames(2);
+    while Kinetics(kineticIndex) >= Kinetics(kineticIndex-1)
+        kineticIndex = kineticIndex-1;
+    end
+    stepOnsets = [stepOnsets; kineticIndex];
+    stepValues = [stepValues; Kinetics(kineticIndex)];
 
 end
 plot(stepOnsets, stepValues, 'r*')
@@ -105,15 +139,15 @@ stepOnsets = unique(stepOnsets,'rows');
 
 [stepOnsetsUnique iRepeat] = unique(stepOnsets);
 stepDiff = diff(iRepeat);
-stepOnsets(stepDiff>1) = [];
-stepValues(stepDiff>1) = [];
+stepOnsets = stepOnsetsUnique;
+stepValues = Kinetics(stepOnsets);
 
-clear pksKin locsKin pksSingle
+clear pks locs pksFilt locsFilt pksSingle
 
 % Make sure you only have one value per step and that no steps are missing
 stepOnsetDiff = diff(stepOnsets);
 for iStep = 1:length(stepOnsetDiff)-1
-    if stepOnsetDiff(iStep) > mean(stepOnsetDiff) + 5
+    if stepOnsetDiff(iStep) >  mean(stepOnsetDiff)+ 150
         warning([' !!! Seems like at least one step is missing around frame ' num2str(stepOnsets(iStep)) '!!' ]);
         Action = input('Do you want to replace step [1], add step [2], or do nothing [0] ?');
         if Action == 0
@@ -130,7 +164,7 @@ for iStep = 1:length(stepOnsetDiff)-1
             stepOnsets = round(sort(stepOnsets, 'ascend'));
             stepOnsetDiff = diff(stepOnsets);
         end
-    elseif stepOnsetDiff(iStep) < mean(stepOnsetDiff) - 5
+    elseif stepOnsetDiff(iStep) < mean(stepOnsetDiff) - 150
         warning([' !!! Seems like there are too many steps around frame ' num2str(stepOnsets(iStep)) '!!' ]);
         Action = input('Do you want to replace step [1], remove step [2], or do nothing [0] ?');
         if Action == 0
