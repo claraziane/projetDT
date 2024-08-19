@@ -5,14 +5,16 @@ clc;
 % Declare paths
 pathData     = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/');
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
-pathFunction = ('/Users/claraziane/Documents/Académique/Informatique/CircStat2012a/');
+addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/CircStat2012a/');
 
-Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'};
+Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot05'; 'Pilot06'; 'Pilot07'; 'Pilot08'; 'Pilot09'};
 Sessions     = {'01'; '02'};
-Conditions   = {'stimWalkST'; 'syncWalkST';...
-                'stimWalkDT'; 'syncWalkDT'};
+Conditions   = {'stimTapST'; 'stimWalkST';...
+                'stimTapDT'; 'stimWalkDT';...
+                'syncTapST'; 'syncWalkST';...
+                'syncTapDT'; 'syncWalkDT'};
      
-for iParticipant = 3:length(Participants)
+for iParticipant = length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -22,14 +24,13 @@ for iParticipant = 3:length(Participants)
         end
 
         % Load behavioural data
-%         load([pathData Participants{iParticipant}  '/' Sessions{iSession} '/Behavioural/dataTap.mat']);
+        load([pathData Participants{iParticipant}  '/' Sessions{iSession} '/Behavioural/dataTap.mat']);
         load([pathData Participants{iParticipant}  '/' Sessions{iSession} '/Behavioural/dataStep.mat']);
         load([pathData Participants{iParticipant}  '/' Sessions{iSession} '/Behavioural/dataRAC.mat']);
 
         for iCondition = 1:length(Conditions)
 
             % Extract acquisition frequency
-            freqStep = Steps.([Conditions{iCondition}]).sampFreq;
             freqRAC  = RAC.([Conditions{iCondition}]).sampFreq;
 
             % Extracting beat onsets
@@ -40,17 +41,19 @@ for iParticipant = 3:length(Participants)
 
             mvtOnset = [];
             if strcmpi(Conditions{iCondition}(5:7), 'Tap') 
+                freqMvt = Taps.([Conditions{iCondition}]).sampFreq;
 
 %                 % Extracting tap onsets
-%                 mvtOnset = Taps.([Conditions{iCondition}]).tapOnset(2:end-1);
+                mvtOnset = Taps.([Conditions{iCondition}]).tapOnset(2:end-1);
 
             else
+                freqMvt = Steps.([Conditions{iCondition}]).sampFreq;
 
                 % Extracting step onsets
                 mvtOnset = Steps.([Conditions{iCondition}]).stepOnsets(2:end-1);
 
             end
-            mvtOnset = (mvtOnset / freqStep) * 1000; %Convert to ms
+            mvtOnset = (mvtOnset / freqMvt) * 1000; %Convert to ms
 
             %% Estimating period-matching accuracy (i.e., extent to which step tempo matches stimulus tempo) using IBI deviation
 

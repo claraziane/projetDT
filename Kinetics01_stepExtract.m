@@ -5,9 +5,11 @@ clc;
 % Declare paths
 pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
 
-Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot06'};
-Sessions     = {'01'; '02'};
-Conditions   = {'stimWalkST'; 'stimWalkDT';...
+Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot05'; 'Pilot06'; 'Pilot07'; 'Pilot08'; 'Pilot09'; 'Pilot10'};
+Sessions     = {'01'; '02'; '03'};
+Conditions   = {'testWalk';
+                'noneWalkST';
+                'stimWalkST'; 'stimWalkDT';...
                 'syncWalkST'; 'syncWalkDT'};
             
 for iParticipant = length(Participants)
@@ -20,6 +22,8 @@ for iParticipant = length(Participants)
 
         if ~exist(pathExport, 'dir')
             mkdir(pathExport)
+        elseif exist([pathExport 'dataStep.mat'], 'file')
+            load([pathExport 'dataStep.mat'])
         end
 
         for iCondition = 1%:length(Conditions)
@@ -27,9 +31,15 @@ for iParticipant = length(Participants)
             Data  = load([pathImport Conditions{iCondition} '.mat']);
             Freq  = Data.(Conditions{iCondition}).Force(1).Frequency;
 
+            if strcmpi(Conditions{iCondition}(1:4), 'test')
+                Time = Freq*60*1;
+            else
+                Time = Freq*60*5;
+            end
+
             % Extact kenetic data from structure
-            Kinetics = Data.(Conditions{iCondition}).Force(1).Force(3,~isnan(Data.(Conditions{iCondition}).Force(1).Force(3,:)))+...
-                       Data.(Conditions{iCondition}).Force(2).Force(3,~isnan(Data.(Conditions{iCondition}).Force(2).Force(3,:)));
+            Kinetics = Data.(Conditions{iCondition}).Force(1).Force(3,1:Time)+...
+                       Data.(Conditions{iCondition}).Force(2).Force(3,1:Time);
 
             % Extract step onsets
             [stepOnsets] = getSteps(Kinetics, Freq);
@@ -38,15 +48,15 @@ for iParticipant = length(Participants)
             [cadence, stepFreq] = getCadence(stepOnsets, Freq);
 
             % Store data in structure
-            Steps.(Conditions{iCondition}).stepOnsets   = stepOnsets;
-            Steps.(Conditions{iCondition}).stepFreq     = stepFreq;
-            Steps.(Conditions{iCondition}).cadence      = cadence;
-            Steps.(Conditions{iCondition}).sampFreq     = Freq;
+            Steps.(Conditions{iCondition}).stepOnsets = stepOnsets;
+            Steps.(Conditions{iCondition}).stepFreq   = stepFreq;
+            Steps.(Conditions{iCondition}).cadence    = cadence;
+            Steps.(Conditions{iCondition}).sampFreq   = Freq;
             
             % Save structure
             save([pathExport '/dataStep'], 'Steps');
 
-            clear Kinetics stepOnsets dataAll
+            clear Kinetics stepOnsets Data
             close all;
 
         end
