@@ -114,6 +114,12 @@ for iTap = 1:length(pks)
 end
 plot(tapOnset, tapValue, 'r*');
 
+% Remove repeating tap onsets
+tapOnset = unique(tapOnset,'rows');
+[tapOnsetsUnique iRepeat] = unique(tapOnset);
+tapOnset = tapOnsetsUnique;
+tapValue = tapData(tapOnset);
+
 clear pks locs pksFilt pks2keep locsFilt pksFiltTemp pksSingle
 
 % Make sure you only have one value per step and that no steps are missing
@@ -121,6 +127,7 @@ ITI = diff(tapOnset);
 for iTap = 1:length(ITI)
     if ITI(iTap) > mean(ITI) + 250
         warning([' !!! Seems like at least one tap is missing around frame ' num2str(tapOnset(iTap)) '!!']);
+       
         Action = input('Do you want to replace tap [1], add tap [2], or do nothing [0] ?');
         if Action == 0
         elseif Action == 1
@@ -158,8 +165,8 @@ for iTap = 1:length(ITI)
     end
 end
 
-nTaps       = length(tapOnset);
-tapFreq     = nTaps / ((tapOnset(end) - tapOnset(1))/Freq);
+nTaps       = length(tapOnset)-1;
+tapFreq     = nTaps / ((tapOnset(end)-1 - tapOnset(1))/Freq);
 tapCadence  = tapFreq * 60;
 
 end

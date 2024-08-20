@@ -111,7 +111,7 @@ for iPksFilt = 2:length(pksFilt)
     end
     kineticRound(kineticRound<=peakThreshold) = 0;
     kineticRound(kineticRound>peakThreshold) = 1;
-    plot(tempFrames, tempKinetic, 'k*')
+%     plot(tempFrames, tempKinetic, 'k*')
 
     for i = 1:length(kineticRound)-1
         if kineticRound(i) == 0 && mean(kineticRound(i+1:end)) == 1
@@ -136,9 +136,7 @@ plot(stepOnsets, stepValues, 'r*')
 
 % Removing identical values
 stepOnsets = unique(stepOnsets,'rows');
-
 [stepOnsetsUnique iRepeat] = unique(stepOnsets);
-stepDiff = diff(iRepeat);
 stepOnsets = stepOnsetsUnique;
 stepValues = Kinetics(stepOnsets);
 

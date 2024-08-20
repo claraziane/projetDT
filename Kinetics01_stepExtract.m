@@ -5,8 +5,8 @@ clc;
 % Declare paths
 pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
 
-Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot05'; 'Pilot06'; 'Pilot07'; 'Pilot08'; 'Pilot09'; 'Pilot10'};
-Sessions     = {'01'; '02'; '03'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'};
+Sessions     = {'01'};
 Conditions   = {'testWalk';
                 'noneWalkST';
                 'stimWalkST'; 'stimWalkDT';...

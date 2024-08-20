@@ -12,8 +12,8 @@
 
 function[cadence, stepFreq] = getCadence(stepOnsets, Freq)
 
-nSteps   = length(stepOnsets);
-stepFreq = nSteps / ((stepOnsets(end) - stepOnsets(1))/Freq);
+nSteps   = length(stepOnsets)-1;
+stepFreq = nSteps / ((stepOnsets(end)-1 - stepOnsets(1))/Freq);
 cadence  = stepFreq * 60;
 
 end
