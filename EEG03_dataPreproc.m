@@ -10,7 +10,7 @@
 close all;
 clear all;
 clc;
-mjdn
+
 pathImport = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/';
 pathExport = [pathImport 'All/'];
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
