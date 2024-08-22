@@ -71,7 +71,7 @@ pksFilt(pksFilt < peakThreshold) = [];
 
 % Find peaks corresponding to tap max force
 itiTemp =  min(diff(locsFilt));
-[pks,locs] = findpeaks(tapData, 'MinPeakHeight', peakThreshold, 'MinPeakDistance', itiTemp);
+[pks,locs] = findpeaks(tapData, 'MinPeakHeight', peakThreshold, 'MinPeakDistance', itiTemp/2);
 % plot(locs, tapData(locs), 'k*')
 
 % Find tap onsets
@@ -125,44 +125,50 @@ clear pks locs pksFilt pks2keep locsFilt pksFiltTemp pksSingle
 % Make sure you only have one value per step and that no steps are missing
 ITI = diff(tapOnset);
 for iTap = 1:length(ITI)
-    if ITI(iTap) > mean(ITI) + 250
-        warning([' !!! Seems like at least one tap is missing around frame ' num2str(tapOnset(iTap)) '!!']);
-       
-        Action = input('Do you want to replace tap [1], add tap [2], or do nothing [0] ?');
-        if Action == 0
-        elseif Action == 1
-            [tapOnset(end+1), tapValue(end+1)] = ginput(1);
-            plot(tapOnset(end), tapValue(end), 'r*')
-            [M, mIndex] = min(abs(tapOnset(end) - tapOnset(1:end-1)));
-            tapOnset(mIndex) = [];
-            tapOnset = round(sort(tapOnset, 'ascend'));
-            ITI = diff(tapOnset);
-        elseif Action == 2
-            [tapOnset(end+1), tapValue(end+1)] = ginput(1);
-            plot(tapOnset(end), tapValue(end), 'r*')
-            tapOnset = round(sort(tapOnset, 'ascend'));
-            ITI = diff(tapOnset);
-        end
-    elseif ITI(iTap) < mean(ITI) - 250
-        warning([' !!! Seems like there are too many taps around frame ' num2str(tapOnset(iTap)) '!!']);
-      
-        Action = input('Do you want to replace tap [1], remove tap [2], or do nothing [0] ?');
-        if Action == 0
-        elseif Action == 1
-            [tapOnset(end+1), tapValue(end+1)] = ginput(1);
-            plot(tapOnset(end), tapValue(end), 'r*')
-            [M, mIndex] = min(abs(tapOnset(end) - tapOnset(1:end-1)));
-            tapOnset(mIndex) = [];
-            tapOnset = round(sort(tapOnset, 'ascend'));
-            ITI = diff(tapOnset);
-        elseif Action == 2
-            tap2remove = input('Which tap do you want to remove (index number)?');
-            tapOnset(tap2remove) = [];
-            tapValue(tap2remove) = [];
-            ITI = diff(tapOnset);
 
+    if iTap <= length(ITI)
+
+        if ITI(iTap) > mean(ITI) + 250
+            warning([' !!! Seems like at least one tap is missing around frame ' num2str(tapOnset(iTap)) '!!']);
+
+            Action = input('Do you want to replace tap [1], add tap [2], or do nothing [0] ?');
+            if Action == 0
+            elseif Action == 1
+                [tapOnset(end+1), tapValue(end+1)] = ginput(1);
+                plot(tapOnset(end), tapValue(end), 'r*')
+                [M, mIndex] = min(abs(tapOnset(end) - tapOnset(1:end-1)));
+                tapOnset(mIndex) = [];
+                tapOnset = round(sort(tapOnset, 'ascend'));
+                ITI = diff(tapOnset);
+            elseif Action == 2
+                [tapOnset(end+1), tapValue(end+1)] = ginput(1);
+                plot(tapOnset(end), tapValue(end), 'r*')
+                tapOnset = round(sort(tapOnset, 'ascend'));
+                ITI = diff(tapOnset);
+            end
+        elseif ITI(iTap) < mean(ITI) - 250
+            warning([' !!! Seems like there are too many taps around frame ' num2str(tapOnset(iTap)) '!!']);
+
+            Action = input('Do you want to replace tap [1], remove tap [2], or do nothing [0] ?');
+            if Action == 0
+            elseif Action == 1
+                [tapOnset(end+1), tapValue(end+1)] = ginput(1);
+                plot(tapOnset(end), tapValue(end), 'r*')
+                [M, mIndex] = min(abs(tapOnset(end) - tapOnset(1:end-1)));
+                tapOnset(mIndex) = [];
+                tapOnset = round(sort(tapOnset, 'ascend'));
+                ITI = diff(tapOnset);
+            elseif Action == 2
+                tap2remove = input('Which tap do you want to remove (index number)?');
+                tapOnset(tap2remove) = [];
+                tapValue(tap2remove) = [];
+                ITI = diff(tapOnset);
+
+            end
         end
+
     end
+
 end
 
 nTaps       = length(tapOnset)-1;

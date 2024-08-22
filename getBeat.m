@@ -32,7 +32,7 @@ envFilt = filtfilt(f,e,abs(audioEnv));
 % plot(envFilt)
 
 % Find envelop peaks
-peakThreshold = 0.1;
+peakThreshold = 0.03;
 [pksFilt, locsFilt] = findpeaks(envFilt); %plot(locsFilt, envFilt(locsFilt), 'r*')
 
 % Only keep one peak per beat
@@ -118,8 +118,8 @@ end
 plot(beatOnset, beatValue, 'r*')
 
 % Extract metronome IOI, frequency & BPM
+beatOnset = unique(beatOnset,'rows');
 [beatOnsetUnique iRepeat] = unique(beatOnset);
-beatDiff = diff(iRepeat);
 beatOnset = beatOnsetUnique;
 beatValue = Audio(beatOnset);
 
@@ -166,8 +166,10 @@ for iIOI = 1:length(IOI)-1
     end
 end
 
-nBeats   = length(beatOnset);
-beatFreq = nBeats / ((beatOnset(end) - beatOnset(1))/Freq);
+warning('Check last beat has been identified for beat categorization !!')
+
+nBeats   = length(beatOnset)-1;
+beatFreq = nBeats / ((beatOnset(end)-1 - beatOnset(1))/Freq);
 BPM      = beatFreq * 60;
 
 clear pks locs pksFilt locsFilt pksSingle

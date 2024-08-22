@@ -6,17 +6,17 @@ clc;
 pathData    = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/');
 pathResults = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 
-Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot05'; 'Pilot06'; 'Pilot07'; 'Pilot08'; 'Pilot09'};
-Sessions     = {'01'; '02'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'};
+Sessions     = {'01'};
 Conditions   = {'noneTapST'; 'noneWalkST';...
-    'stimTapST'; 'stimWalkST';...
-    'stimTapDT'; 'stimWalkDT';...
-    'syncTapST'; 'syncWalkST';...
-    'syncTapDT'; 'syncWalkDT'};
+                'stimTapST'; 'stimWalkST';...
+                'stimTapDT'; 'stimWalkDT';...
+                'syncTapST'; 'syncWalkST';...
+                'syncTapDT'; 'syncWalkDT'};
+    
+for iParticipant = length(Participants)
 
-for iParticipant = 6:length(Participants)
-
-    for iSession = 1%:length(Sessions)
+    for iSession = 1
 
         pathExport = [pathResults Participants{iParticipant} '/' Sessions{iSession} '/'];
         if ~exist(pathExport, 'dir')

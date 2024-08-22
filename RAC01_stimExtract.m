@@ -5,8 +5,8 @@ clc;
 % Declare paths
 pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
 
-Participants = {'Pilot02'; 'Pilot03'; 'Pilot04'; 'Pilot05'; 'Pilot06'; 'Pilot07'; 'Pilot08'; 'Pilot09'};
-Sessions     = {'01'; '02'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'};
+Sessions     = {'01'};
 Conditions   = {'stimRestST'; 'stimTapST'; 'stimWalkST';...
                 'stimRestDT'; 'stimTapDT'; 'stimWalkDT';...
                 'syncTapST'; 'syncWalkST';...
@@ -29,7 +29,7 @@ for iParticipant = length(Participants)
         for iCondition = 1:length(Conditions) 
 
             % Load data
-            load([pathImport '/Audio/' Conditions{iCondition} '.mat'])
+            load([pathImport '/Audio/' Conditions{iCondition} '.mat'], 'dataAudio')
             Data  = load([pathImport '/QTM/' Conditions{iCondition} '.mat']);
             Freq  = Data.(Conditions{iCondition}).Analog.Frequency;
 
@@ -46,20 +46,41 @@ for iParticipant = length(Participants)
             % Extract beat frequency, BPM, and IOI
             [beatFreq, BPM, IOI, beatOnset] = getBeat(Audio, Freq, preferredBPM);
 
+            % Extract beat category
+            if strcmpi(Conditions{iCondition}(end-1:end), 'DT')
+                load([pathImport '/Expe/' Conditions{iCondition} '_Targets.mat'], 'Beats');
+                Beats(Beats   == 0) = [];
+                Beats = Beats(end-length(beatOnset)+1:end);
+                 for iBeat = 1:length(beatOnset)
+                     if Beats(iBeat) == 1
+                         beatCat{iBeat, 1} = 'Standard';
+                     elseif Beats(iBeat) == 2
+                         beatCat{iBeat, 1} = 'targetLow';
+                     elseif Beats(iBeat) == 3
+                         beatCat{iBeat, 1} = 'targetHigh';
+                     end
+                end
+            else
+                for iBeat = 1:length(beatOnset)
+                    beatCat{iBeat, 1} = 'Standard';
+                end
+            end
+
             % Store data in structure
             RAC.([Conditions{iCondition}]).beatOnset(:,1)     = beatOnset; % Store beat onsets in structure
             RAC.([Conditions{iCondition}]).beatFrequency(1,1) = beatFreq;  % Store frequency in structure (other method)
             RAC.([Conditions{iCondition}]).BPM(1,1)           = BPM;       % Store BPM in structure
             RAC.(Conditions{iCondition}).sampFreq             = Freq;
+            RAC.(Conditions{iCondition}).beatCat              = beatCat;
 
             % Save structure
             save([pathExport 'dataRAC.mat'], 'RAC');
             
-            clear Audio beatOnset IOI dataAll            
+            clear Audio beatOnset IOI dataAudio         
             close all;
 
         end %Conditions
-        clear RAC dataAudio
+        clear RAC 
 
     end %Sessions
 

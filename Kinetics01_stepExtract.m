@@ -12,7 +12,7 @@ Conditions   = {'testWalk';
                 'stimWalkST'; 'stimWalkDT';...
                 'syncWalkST'; 'syncWalkDT'};
             
-for iParticipant = length(Participants)
+for iParticipant = length(Participants)-1
 
     for iSession = 1%:length(Sessions)
 
@@ -26,7 +26,7 @@ for iParticipant = length(Participants)
             load([pathExport 'dataStep.mat'])
         end
 
-        for iCondition = 1%:length(Conditions)
+        for iCondition = 2:length(Conditions)
 
             Data  = load([pathImport Conditions{iCondition} '.mat']);
             Freq  = Data.(Conditions{iCondition}).Force(1).Frequency;

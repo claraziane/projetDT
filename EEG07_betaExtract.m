@@ -15,7 +15,7 @@ pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/GED-master/'); %For Gaussian filtering
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'};
+Participants = {'P03'};
 Sessions     = {'01'; '02'; '03'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -27,7 +27,7 @@ Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
 sFWHM = 0.5; % FWHM of stim frequency
 
 eeglab;
-for iParticipant = 1:length(Participants)
+for iParticipant = length(Participants)
     disp(Participants{iParticipant})
 
     for iSession = 1%:length(Sessions)
@@ -35,7 +35,7 @@ for iParticipant = 1:length(Participants)
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
 
-        for iCondition = 1:length(Conditions)
+        for iCondition = 10:length(Conditions)
 
             % Create folder for participant's results if does not exist
             pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/', Conditions{iCondition}, '/');
@@ -121,7 +121,7 @@ for iParticipant = 1:length(Participants)
 
             % S covariance
             sData = [];
-            sData = filterFGx(data,freqEEG,sFreq,sFWHM);
+            sData = filterFGx(data,freqEEG,20,3);
 
             nMvt = 1;
             for iMvt = 1:length(eventOnset)-1
@@ -188,7 +188,7 @@ for iParticipant = 1:length(Participants)
             subplot(122); imagesc(rCovariance);
             axis square; set(gca,'clim',clim); xlabel('Channels'), ylabel('Channels'); colorbar
             title('Covariance Matrix R');
-            saveas(figure(3), ['/' pathParticipant 'fig_ssepCovariance.png']);
+%             saveas(figure(3), ['/' pathParticipant 'fig_ssepCovariance.png']);
 
             %% Extract component
 
@@ -217,7 +217,7 @@ for iParticipant = 1:length(Participants)
 
             end
             colormap jet
-            saveas(figure(4), [pathParticipant 'fig_ssepComponents.png']);
+%             saveas(figure(4), [pathParticipant 'fig_ssepComponents.png']);
 
             comp2Keep = 1; %input('Which component should be kept ?'); comp2Keep = 2;
             compMax   = lambdaIndex(comp2Keep);
@@ -243,11 +243,11 @@ for iParticipant = 1:length(Participants)
             xlabel({'Time (s)'}, 'FontSize', 14),
             title('Component Time Series', 'FontSize', 14);
             subplot(2,2,[3:4]); plot(Hz,compFFT);
-            xlim = [0 25]; set(gca,'xlim',xlim);...
+            xlim = [0 45]; set(gca,'xlim',xlim);...
                 xlabel('Frequency (Hz)', 'FontSize', 14) ; ylabel('Power', 'FontSize', 14);
             legend(['Peak frequency = ' num2str(freqMax)], 'FontSize', 14);
             title('Component FFT', 'FontSize', 14);
-            saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
+%             saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
 
             if abs(sFreq-freqMax) > .5
                 if strcmpi(Conditions{iCondition}, 'noneRestST')
@@ -276,7 +276,7 @@ for iParticipant = 1:length(Participants)
             end
 
             figure(6), clf
-            xlim = [0.5 15];
+            xlim = [0.5 45];
             subplot(2,2,1); topoplot(comp2plot./max(comp2plot),chanLocs,'maplimits',[-1 1],'numcontour',0,'electrodes','on','shading','interp');
             title([ 'Component at ' num2str(freqMax) ' Hz' ], 'FontSize', 14);
             subplot(2,2,2); topo2plot = dataFFT(:,dsearchn(Hz', freqMax)); topoplot(topo2plot./max(topo2plot),chanLocs,'maplimits',[-1 1],'numcontour',0,'electrodes','on','emarker2',{find(strcmpi({chanLocs.labels},electrode)) 'o' 'w' 4},'shading','interp');
@@ -284,7 +284,7 @@ for iParticipant = 1:length(Participants)
             subplot(2,2,[3:4]); plot(Hz,compSNR,'ro-','linew',1,'markersize',5,'markerface','w'); hold on;
             plot(Hz,elecSNR,'ko-','linew',1,'markersize',5,'markerface','w');
             set(gca,'xlim',xlim); xlabel('Frequency (Hz)', 'FontSize', 14), ylabel('SNR', 'FontSize', 14); legend({'Component'; electrode}, 'FontSize', 14); clear xlim
-            saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
+%             saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
 
             save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_comp.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'eventOnset', 'beatOnset', 'freqEEG');
 
