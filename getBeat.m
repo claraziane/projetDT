@@ -126,42 +126,46 @@ beatValue = Audio(beatOnset);
 % Make sure no beat is missing
 IOI = diff(beatOnset);
 for iIOI = 1:length(IOI)-1
-    if IOI(iIOI) > mean(IOI) + 50
-        warning([' !!! Seems like at least one beat is missing around frame number ' num2str(beatOnset(iIOI)) '!!']);
 
-        Action = input('Do you want to replace beat [1], add beat [2], or do nothing [0] ?');
-        if Action == 0
-        elseif Action == 1
-            [beatOnset(end+1), beatValue(end+1)] = ginput(1);
-            plot(beatOnset(end), beatValue(end), 'r*')
-            [M, mIndex] = min(abs(beatOnset(end) - beatOnset(1:end-1)));
-            beatOnset(mIndex) = [];
-            beatOnset = round(sort(beatOnset, 'ascend'));
-            IOI = diff(beatOnset);
-        elseif Action == 2
-            [beatOnset(end+1), beatValue(end+1)] = ginput(1);
-            plot(beatOnset(end), beatValue(end), 'r*')
-            beatOnset = round(sort(beatOnset, 'ascend'));
-            IOI = diff(beatOnset);
-        end
+    if iIOI <= length(IOI)
 
-    elseif IOI(iIOI) < mean(IOI) - 50
-        warning([' !!! Seems like there are too many beats around frame number ' num2str(beatOnset(iIOI)) '!!']);
-        
-        Action = input('Do you want to replace beat [1], remove beat [2], or do nothing [0] ?');
-        if Action == 0
-        elseif Action == 1
-            [beatOnset(end+1), beatValue(end+1)] = ginput(1);
-            plot(beatOnset(end), beatValue(end), 'r*')
-            [M, mIndex] = min(abs(beatOnset(end) - beatOnset(1:end-1)));
-            beatOnset(mIndex) = [];
-            beatOnset = round(sort(beatOnset, 'ascend'));
-            IOI = diff(beatOnset);
-        elseif Action == 2
-            beat2remove = input('Which beat do you want to remove (index number)');
-            beatOnset(beat2remove) = [];
-            beatValue(beat2remove) = [];
-            IOI = diff(beatOnset);
+        if IOI(iIOI) > mean(IOI) + 50
+            warning([' !!! Seems like at least one beat is missing around frame number ' num2str(beatOnset(iIOI)) '!!']);
+
+            Action = input('Do you want to replace beat [1], add beat [2], or do nothing [0] ?');
+            if Action == 0
+            elseif Action == 1
+                [beatOnset(end+1), beatValue(end+1)] = ginput(1);
+                plot(beatOnset(end), beatValue(end), 'r*')
+                [M, mIndex] = min(abs(beatOnset(end) - beatOnset(1:end-1)));
+                beatOnset(mIndex) = [];
+                beatOnset = round(sort(beatOnset, 'ascend'));
+                IOI = diff(beatOnset);
+            elseif Action == 2
+                [beatOnset(end+1), beatValue(end+1)] = ginput(1);
+                plot(beatOnset(end), beatValue(end), 'r*')
+                beatOnset = round(sort(beatOnset, 'ascend'));
+                IOI = diff(beatOnset);
+            end
+
+        elseif IOI(iIOI) < mean(IOI) - 50
+            warning([' !!! Seems like there are too many beats around frame number ' num2str(beatOnset(iIOI)) '!!']);
+
+            Action = input('Do you want to replace beat [1], remove beat [2], or do nothing [0] ?');
+            if Action == 0
+            elseif Action == 1
+                [beatOnset(end+1), beatValue(end+1)] = ginput(1);
+                plot(beatOnset(end), beatValue(end), 'r*')
+                [M, mIndex] = min(abs(beatOnset(end) - beatOnset(1:end-1)));
+                beatOnset(mIndex) = [];
+                beatOnset = round(sort(beatOnset, 'ascend'));
+                IOI = diff(beatOnset);
+            elseif Action == 2
+                beat2remove = input('Which beat do you want to remove (index number)');
+                beatOnset(beat2remove) = [];
+                beatValue(beat2remove) = [];
+                IOI = diff(beatOnset);
+            end
         end
     end
 end

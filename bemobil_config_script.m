@@ -5,7 +5,7 @@ clear bemobil_config
 % !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 % foldernames (NEED to have a filesep at the end, sorry!)
 % !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-bemobil_config.filename_prefix = 'Pilot0';
+bemobil_config.filename_prefix = 'P1';
 
 % ------------ IMPORTANT --------------
 % Adapt this data path to the place where you put the example data!
@@ -33,7 +33,7 @@ bemobil_config.single_subject_cleaned_ICA_filename = 'cleaned_with_ICA.set';
 
 % enter channels that you did not use at all (e.g. with our custom MoBI 160 chan layout, only 157 chans are used), leave
 % empty, if all channels are used
-process_config.channels_to_remove = {'x_dir' 'y_dir' 'z_dir'};
+process_config.channels_to_remove = {'ECG', 'x_dir', 'y_dir', 'z_dir'};
 % bemobil_config.channels_to_remove = [];
 
 % enter EOG channel names here:

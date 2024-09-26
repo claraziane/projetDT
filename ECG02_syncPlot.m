@@ -8,7 +8,7 @@ pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMon
 addpath('/Users/claraziane/Documents/Académique/Informatique/CircStat2012a/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
+Participants = {'P01'; 'P02'; 'P07'; 'P08'; 'P09'};
 Sessions     = {'01'; '02'};
 
 Conditions   = {'stimTap'; 'syncTap'; 'stimWalk'; 'syncWalk'};
@@ -30,14 +30,15 @@ for iSession = 1%:length(Sessions)
         for iParticipant = 1:length(Participants)
 
             pathImport = [pathResults Participants{iParticipant} '/' Sessions{iSession} '/'];
-            load([pathImport 'resultsSync.mat']);
+            load([pathImport 'resultsSyncECG.mat']);
 
             for iCompare = 1:length(Comparisons)
                 condName = [Conditions{iCondition} Comparisons{iCompare}];
 
+
                 % Asynchronies
                 Asynchrony = [];
-                Asynchrony = resultsSync.(condName).Asynchrony;
+                Asynchrony = resultsSyncECG.(condName).Asynchrony;
                 asyncMean(iParticipant, iPlot+iCompare-1, iSession) = mean(Asynchrony);
                 SEM = std(Asynchrony) / sqrt(length(Asynchrony));
                 t = tinv([0.025 0.975], length(Asynchrony)-1);
@@ -45,7 +46,7 @@ for iSession = 1%:length(Sessions)
 
                 % Phase angles (in rad)
                 phaseAngle = [];
-                phaseAngle = deg2rad(resultsSync.(condName).phaseAngle);
+                phaseAngle = deg2rad(resultsSyncECG.(condName).phaseAngle);
                 phaseMean(iParticipant, iPlot+iCompare-1, iSession) = circ_mean(phaseAngle, [], 1); 
                 phaseMean(iParticipant, iPlot+iCompare-1, iSession) = rad2deg(phaseMean(iParticipant, iPlot+iCompare-1, iSession));
                 SEM = circ_std(phaseAngle) / sqrt(length(phaseAngle));
@@ -53,10 +54,10 @@ for iSession = 1%:length(Sessions)
                 phaseCI(iParticipant, : , iPlot+iCompare-1, iSession) = rad2deg(circ_mean(phaseAngle, [], 1) + t * SEM);
 
                 % Resultant vector lengths
-                RVL(iParticipant, iPlot+iCompare-1, iSession) = log(resultsSync.(condName).resultantLength ./ (1-resultsSync.(condName).resultantLength));
+                RVL(iParticipant, iPlot+iCompare-1, iSession) = log(resultsSyncECG.(condName).resultantLength ./ (1-resultsSyncECG.(condName).resultantLength));
 
                 % Inter-beat interval deviations
-                IBI(iParticipant, iPlot+iCompare-1, iSession) = resultsSync.(condName).IBIDeviation;
+                IBI(iParticipant, iPlot+iCompare-1, iSession) = resultsSyncECG.(condName).IBIDeviation;
             
             end % End Comparisons
 
@@ -76,11 +77,11 @@ for iSession = 1%:length(Sessions)
     plotScatterCI(phaseMean, phaseCI, Comparisons, Conditions, 'Phase Angles (°)');
 
     % Save
-    saveas(figure(1), [pathResults '/All/' Sessions{iSession} '/fig_syncConsistency.png'])
-    saveas(figure(2), [pathResults '/All/' Sessions{iSession} '/fig_syncAccuracy.png'])
-    saveas(figure(3), [pathResults '/All/' Sessions{iSession} '/fig_syncIBI.png'])
-    saveas(figure(4), [pathResults '/All/' Sessions{iSession} '/fig_syncAsyncCI.png'])
-    saveas(figure(5), [pathResults '/All/' Sessions{iSession} '/fig_syncAccuracyCI.png'])
+    saveas(figure(1), [pathResults '/All/' Sessions{iSession} '/fig_ecgConsistency.png'])
+    saveas(figure(2), [pathResults '/All/' Sessions{iSession} '/fig_ecgAccuracy.png'])
+    saveas(figure(3), [pathResults '/All/' Sessions{iSession} '/fig_ecgIBI.png'])
+    saveas(figure(4), [pathResults '/All/' Sessions{iSession} '/fig_ecgAsyncCI.png'])
+    saveas(figure(5), [pathResults '/All/' Sessions{iSession} '/fig_ecgAccuracyCI.png'])
     
     close all;
 

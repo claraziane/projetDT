@@ -7,25 +7,21 @@ pathData     = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMon
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/CircStat2012a/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08';'P09'; 'P10'; 'P11'};
+Participants = {'P01'; 'P02'; 'P07'; 'P08';'P09'; 'P10'; 'P11'};
 Sessions     = {'01'; '02'};
 Conditions   = {'stimTapST'; 'stimWalkST';...
                 'stimTapDT'; 'stimWalkDT';...
                 'syncTapST'; 'syncWalkST';...
                 'syncTapDT'; 'syncWalkDT'};
      
-for iParticipant = 8:length(Participants)
+for iParticipant = length(Participants)
 
     for iSession = 1%:length(Sessions)
 
         pathExport = [pathResults Participants{iParticipant} '/' Sessions{iSession} '/'];
-        if ~exist(pathExport, 'dir')
-            mkdir(pathExport)
-        end
-
+  
         % Load behavioural data
-        load([pathData Participants{iParticipant}  '/' Sessions{iSession} '/Behavioural/dataTap.mat']);
-        load([pathData Participants{iParticipant}  '/' Sessions{iSession} '/Behavioural/dataStep.mat']);
+        load([pathExport '/resultsECG.mat']);
         load([pathData Participants{iParticipant}  '/' Sessions{iSession} '/Behavioural/dataRAC.mat']);
 
         for iCondition = 1:length(Conditions)
@@ -39,42 +35,33 @@ for iParticipant = 8:length(Participants)
             beatOnset = (beatOnset / freqRAC) * 1000; %Convert to ms
             IOI = mean(diff(beatOnset));
 
-            mvtOnset = [];
-            if strcmpi(Conditions{iCondition}(5:7), 'Tap') 
-                freqMvt = Taps.([Conditions{iCondition}]).sampFreq;
+            heartOnset = [];
+            freqECG = resultsECG.([Conditions{iCondition}]).sampFreq;
 
-%                 % Extracting tap onsets
-                mvtOnset = Taps.([Conditions{iCondition}]).tapOnset(2:end-1);
-
-            else
-                freqMvt = Steps.([Conditions{iCondition}]).sampFreq;
-
-                % Extracting step onsets
-                mvtOnset = Steps.([Conditions{iCondition}]).stepOnsets(2:end-1);
-
-            end
-            mvtOnset = (mvtOnset / freqMvt) * 1000; %Convert to ms
+            % Extracting tap onsets
+            heartOnset = resultsECG.([Conditions{iCondition}]).heartOnsets(2:end-1);
+            heartOnset = (heartOnset / freqECG) * 1000; %Convert to ms
 
             %% Estimating period-matching accuracy (i.e., extent to which step tempo matches stimulus tempo) using IBI deviation
 
             % Matching step onsets to closest beat
             beatMatched = [];
-            for iMvt = 1:length(mvtOnset)
-                [minValue matchIndex] = min(abs(beatOnset-mvtOnset(iMvt)));
-                beatMatched(iMvt,1) = beatOnset(matchIndex);
+            for iHR = 1:length(beatOnset)
+                [minValue matchIndex] = min(abs(heartOnset-beatOnset(iHR)));
+                beatMatched(iHR,1) = heartOnset(matchIndex);
             end
 
             % Calculating interstep interval
-            mvtInterval = [];
-            mvtInterval = diff(mvtOnset);
+            heartInterval = [];
+            heartInterval = diff(beatMatched);
 
             % Calculating interbeat interval
             racInterval = [];
-            racInterval = diff(beatMatched);
+            racInterval = diff(beatOnset);
             
             % Calculating IBI deviation
             IBI = [];
-            IBI = mean(abs(mvtInterval - racInterval))/mean(racInterval);
+            IBI = mean(abs(heartInterval - racInterval))/mean(racInterval);
 
             %% Estimating phase-matching accuracy (i.e., the difference between step onset times and beat onset times) using circular asynchronies
             asynchrony           = [];
@@ -82,8 +69,8 @@ for iParticipant = 8:length(Participants)
             asynchronyCircular   = [];
             asynchronyRad        = [];
 
-            asynchrony           = mvtOnset - beatMatched;
-            asynchronyNormalized = asynchrony(1:end-1)./mvtInterval;
+            asynchrony           = beatMatched - beatOnset;
+            asynchronyNormalized = asynchrony(1:end-1)./heartInterval;
             asynchronyCircular   = asynchronyNormalized * 360;
             asynchronyRad        = asynchronyCircular * pi/180;
             asynchronyMean       = circ_mean(asynchronyRad, [], 1);
@@ -107,20 +94,20 @@ for iParticipant = 8:length(Participants)
             resultantLength = circ_r(phaseRad, [], [], 1);
 
             % Storing results in structure
-            resultsSync.([Conditions{iCondition}]).IBIDeviation = IBI;
-            resultsSync.([Conditions{iCondition}]).Asynchrony = asynchrony;
-            resultsSync.([Conditions{iCondition}]).circularAsynchrony = asynchronyCircular;
-            resultsSync.([Conditions{iCondition}]).asynchronyMean = asynchronyMean;
-            resultsSync.([Conditions{iCondition}]).circularVariance = varianceCircular;
-            resultsSync.([Conditions{iCondition}]).pRao = p;
-            resultsSync.([Conditions{iCondition}]).phaseAngle = phaseAngle;
-            resultsSync.([Conditions{iCondition}]).phaseAngleMean = phaseAngleMean;
-            resultsSync.([Conditions{iCondition}]).resultantLength = resultantLength;
+            resultsSyncECG.([Conditions{iCondition}]).IBIDeviation = IBI;
+            resultsSyncECG.([Conditions{iCondition}]).Asynchrony = asynchrony;
+            resultsSyncECG.([Conditions{iCondition}]).circularAsynchrony = asynchronyCircular;
+            resultsSyncECG.([Conditions{iCondition}]).asynchronyMean = asynchronyMean;
+            resultsSyncECG.([Conditions{iCondition}]).circularVariance = varianceCircular;
+            resultsSyncECG.([Conditions{iCondition}]).pRao = p;
+            resultsSyncECG.([Conditions{iCondition}]).phaseAngle = phaseAngle;
+            resultsSyncECG.([Conditions{iCondition}]).phaseAngleMean = phaseAngleMean;
+            resultsSyncECG.([Conditions{iCondition}]).resultantLength = resultantLength;
 
         end % End Conditions
 
         % Save results
-        save([pathExport 'resultsSync.mat'], 'resultsSync');
+        save([pathExport 'resultsSyncECG.mat'], 'resultsSyncECG');
 
     end % End Sessions
 

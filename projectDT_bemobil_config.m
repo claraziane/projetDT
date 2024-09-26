@@ -2,7 +2,7 @@ clear bemobil_config
 
 %% General Setup
 bemobil_config.study_folder = ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed' filesep]; %(NEEDS to have a filesep at the end, sorry!) 
-bemobil_config.filename_prefix = 'Pilot0';
+bemobil_config.filename_prefix = 'P1';
 
 % foldernames (NEED to have a filesep at the end, sorry!) 
 % see "template_import_xdf2bids.m" and "template_import_bids2set.m" to see how the raw EEGLAB folder is created from data in BIDS
@@ -27,12 +27,12 @@ bemobil_config.single_subject_cleaned_ICA_filename = 'cleaned_with_ICA.set';
 
 % enter channels that you did not use at all (e.g. with our custom MoBI 160 chan layout, only 157 chans are used), leave
 % empty, if all channels are used
-process_config.channels_to_remove = {'x_dir' 'y_dir' 'z_dir'};
+process_config.channels_to_remove = {'ECG', 'x_dir', 'y_dir', 'z_dir'};
 % bemobil_config.channels_to_remove = [];
 
 % enter EOG channel names here:
 % bemobil_config.eog_channels  = {'VEOG', 'HEOG'};
-bemobil_config.eog_channels  = {};
+bemobil_config.eog_channels  = {}; %'ECG', 'x_dir', 'y_dir', 'z_dir'
 
 % if you add a channel here it needs to have a location as well. this means a new channel will be created and the old
 % reference will be back in the dataset 

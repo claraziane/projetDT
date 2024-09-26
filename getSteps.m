@@ -57,6 +57,7 @@ for iPksFilt = 1:length(pksFilt)-3
 
         locsFilt(iPksFilt+3:end+1) = locsFilt(iPksFilt+2:end);
         locsFilt(iPksFilt+2) = locsFilt(iPksFilt+2)-1;
+  
     elseif pksFiltTemp(iPksFilt) == 1 && pksFiltTemp(iPksFilt-1) == 0 && pksFiltTemp(iPksFilt+1) == 0
         pksSingle = [pksSingle; locsFilt(iPksFilt)];
     end

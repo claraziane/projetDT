@@ -6,7 +6,7 @@ clc;
 pathResults = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/'); %Functions for figures
 
-Participants = {'Pilot07'; 'Pilot08'; 'Pilot09'}; %'Pilot02'; 'Pilot03';; 'Pilot06'; 'Pilot04'; 'Pilot05'; 
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
 Sessions     = {'01'; '02'};
 
 Conditions   = {'noneTap'; 'stimTap'; 'syncTap'; 'noneWalk'; 'stimWalk'; 'syncWalk'};

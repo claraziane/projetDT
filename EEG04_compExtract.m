@@ -15,7 +15,7 @@ pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/GED-master/'); %For Gaussian filtering
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
 Sessions     = {'01'; '02'; '03'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -27,7 +27,7 @@ Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
 sFWHM = 0.5; % FWHM of stim frequency
 
 eeglab;
-for iParticipant = 1:length(Participants)
+for iParticipant = length(Participants)
     disp(Participants{iParticipant})
 
     for iSession = 1%:length(Sessions)
@@ -104,7 +104,7 @@ for iParticipant = 1:length(Participants)
             data = double(data);
 
             % Filter under 45 Hz
-            [b,a] = butter(3, 40/(freqEEG/2), 'low') ; % Low-pass filter parameters (<45 Hz)
+            [b,a] = butter(3, 40/(freqEEG/2), 'low') ; % Low-pass filter parameters (<40 Hz)
             for iChan = 1:EEG.nbchan
                 data(iChan,:) = filtfilt(b,a,data(iChan,:));
             end

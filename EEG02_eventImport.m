@@ -9,10 +9,11 @@ clear all;
 clc;
 
 % Declare paths
-pathData    = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
+pathData    = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/');
+pathResults = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1')
 
-Participants = {'Pilot07'; 'Pilot08'; 'Pilot09'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
 Sessions     = {'01'; '02'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -22,23 +23,30 @@ Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
 
 extRoot  = '.set';
 extFinal = '_events.set';
-
+         
+warning('on')
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 for iParticipant =  length(Participants)
 
     for iSession = 1%:length(Sessions)
 
-%         pathRaw = fullfile(pathData,'RAW/', Participants{iParticipant}, '/', Sessions{iSession}, '/EEG/');
-        pathProcessed = fullfile(pathData, 'Processed/', Participants{iParticipant}, Sessions{iSession}, '/EEG/');
-        
+        pathProcessed = fullfile(pathData, Participants{iParticipant}, Sessions{iSession}, '/EEG/');
+        pathExport    = fullfile(pathResults, Participants{iParticipant}, Sessions{iSession}, '/');
+
         if ~exist(pathProcessed, 'dir')
             mkdir(pathProcessed)
         end
         
+        if ~exist(pathExport, 'dir')
+            mkdir(pathExport)
+        elseif exist([pathExport 'resultsECG.mat'], 'file')
+            load([pathExport 'resultsECG.mat'])
+        end
+        
         % Load events
-        load([pathData 'Processed/' Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataRAC.mat'])
-        load([pathData 'Processed/' Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataTap.mat'])
-        load([pathData 'Processed/' Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataStep.mat'])
+        load([pathData Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataRAC.mat'])
+        load([pathData Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataTap.mat'])
+        load([pathData Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataStep.mat'])
 
         for iCondition = 1:length(Conditions)
 
@@ -144,15 +152,47 @@ for iParticipant =  length(Participants)
            
             end
 
+            %% Heart beats
+
+            % Extact ECG data from structure
+            chanECG      = strcmpi([{EEG.chanlocs.labels}], 'ECG');
+            [~, chanECG] = max(chanECG);
+            heartData    = EEG.data(chanECG,:);
+
+            % Extract heart beat onsets
+            sampFreq = EEG.srate;
+            [heartOnsets, heartRate, BPM,  IBI, ibiMean, ibiCV] = getHeart(heartData, sampFreq);
+
+            % Store data in structure
+            resultsECG.([Conditions{iCondition}]).heartOnsets(:,1) = heartOnsets; % Store heart onsets in structure
+            resultsECG.([Conditions{iCondition}]).heartRate(1,1)   = heartRate;   % Store heart frequency in structure
+            resultsECG.([Conditions{iCondition}]).BPM              = BPM;         % Store number of heart beats per minute in structure
+            resultsECG.([Conditions{iCondition}]).IBI(:,1)         = IBI;         % Store inter-beat interval in structure
+            resultsECG.([Conditions{iCondition}]).ibiMean(:,1)     = ibiMean;     % Storeinter-beat interval mean in structure
+            resultsECG.([Conditions{iCondition}]).ibiCV(:,1)       = ibiCV;       % Store inter-beat interval coefficient of varation in structure          
+            resultsECG.([Conditions{iCondition}]).sampFreq         = sampFreq;    % Store ECG data sampling frequency in structure          
+           
+            % Save structure
+            save([pathExport 'resultsECG.mat'], 'resultsECG');
+
+            nEvents = length(EEG.event);
+            for iEvent=1:length(heartOnsets)
+                EEG.event(nEvents+iEvent).type = 'heartBeat' ;
+                EEG.event(nEvents+iEvent).latency = heartOnsets(iEvent) ;
+                EEG.event(nEvents+iEvent).duration = 1 ;
+                EEG.event(nEvents+iEvent).urevent = nEvents+iEvent  ;
+            end
+            [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'overwrite','on','gui','off');
+
             % Save new _event.set file in preprocessed folder
             EEG = pop_saveset(EEG, 'filename', fileWrite, 'filepath', pathProcessed);
 
             ALLEEG = []; EEG = [];
-            clear beatOnsets tapOnsets stepOnsets triggerStart triggerEnd triggers  
+            clear beatOnsets tapOnsets stepOnsets triggerStart triggerEnd triggers heartData heartOnsets IBI
 
         end % Condtitions
 
-        clear Taps Steps RAC
+        clear Taps Steps RAC resultsECG
 
     end % Sessions
 

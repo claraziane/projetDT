@@ -7,8 +7,8 @@ pathProject = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
 
-Participants = {'Pilot07'; 'Pilot08'; 'Pilot09'};
-Sessions     = {'01'; '02'; '03'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
+Sessions     = {'01'}; %; '02'; '03'
 Conditions   = {'noneRest'; 'stimRest'; 'noneTap'; 'stimTap'; 'syncTap'; 'noneWalk'; 'stimWalk'; 'syncWalk'};
 Comparisons  = {'ST'; 'DT'};
 

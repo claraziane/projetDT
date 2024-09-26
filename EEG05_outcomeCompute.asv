@@ -16,7 +16,7 @@ pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/tweetCodes/'); %Custom FIR check function
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/CircStat2012a/'); %For computing phase consistency
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'};
 Sessions     = {'01'; '02'; '03'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -24,7 +24,7 @@ Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                               'syncTapST'; 'syncWalkST';...
                               'syncTapDT'; 'syncWalkDT'};
 
-for iParticipant = length(Participants)
+for iParticipant = 5%:length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -34,15 +34,15 @@ for iParticipant = length(Participants)
         % Load stimuli info
         load([pathData Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC.mat']);
 
-%         if exist([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'], 'file')
-%             load([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'])
-%         end
-
-        for iCondition = 1:length(Conditions)
+        for iCondition = 4:length(Conditions)
            
             % Load data
             load([pathData Participants{iParticipant} '/'  Sessions{iSession} '/EEG/' Conditions{iCondition} '_comp.mat']);
             
+            if exist([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'], 'file')
+                load([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'])
+            end
+
             %% ERP
             if strcmpi(Conditions{iCondition}(1:4), 'none') ~= 1
           
@@ -154,11 +154,12 @@ for iParticipant = length(Participants)
             resultsEEG.([Conditions{iCondition}]).stabilityIndex = stabilityIndex;   
                
             close all;
-            clear comp2plot compSNR compTime eventOnset firW Hz time erpStandard erpTargetHigh erpTargetLow beatCat beatOnset
+            clear comp2plot compSNR compTime eventOnset firW Hz time erpStandard
 
         end
         save([pathParticipant 'resultsEEG'], 'resultsEEG');
-        clear resultsEEG RAC
+        clear resultsEEG
+
 
     end
 

@@ -5,7 +5,7 @@ clc;
 % Declare paths
 pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
 Sessions     = {'01'};
 Conditions   = {'testTap';
                 'noneTapST';
@@ -26,7 +26,7 @@ for iParticipant = length(Participants)
             load([pathExport 'dataTap.mat'])
         end
 
-        for iCondition = 3:length(Conditions)
+        for iCondition = 1%2:length(Conditions)
 
             Data  = load([pathImport Conditions{iCondition} '.mat']);
             Freq  = Data.(Conditions{iCondition}).Analog.Frequency;
