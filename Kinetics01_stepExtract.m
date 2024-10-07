@@ -1,11 +1,11 @@
 clear all; 
-close all;
+% close all;
 clc;
 
 % Declare paths
 pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'};
 Sessions     = {'01'};
 Conditions   = {'testWalk';
                 'noneWalkST';

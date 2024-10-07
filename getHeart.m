@@ -1,5 +1,7 @@
 function [heartOnsets, heartRate, BPM,  IBI, ibiMean, ibiCV] = getHeart(heartData, sampFreq)
 
+warning('on')
+
 heartData = (heartData(~isnan(heartData)))* -1;
 heartData = detrend(heartData - mean(heartData)); % Center around 0 and remove offset
 figure; plot(heartData); title('ECG'); hold on;

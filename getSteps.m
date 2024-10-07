@@ -57,10 +57,36 @@ for iPksFilt = 1:length(pksFilt)-3
 
         locsFilt(iPksFilt+3:end+1) = locsFilt(iPksFilt+2:end);
         locsFilt(iPksFilt+2) = locsFilt(iPksFilt+2)-1;
-  
-    elseif pksFiltTemp(iPksFilt) == 1 && pksFiltTemp(iPksFilt-1) == 0 && pksFiltTemp(iPksFilt+1) == 0
+    end
+    if pksFiltTemp(iPksFilt) == 1 && pksFiltTemp(iPksFilt-1) == 0 && pksFiltTemp(iPksFilt+1) == 0
         pksSingle = [pksSingle; locsFilt(iPksFilt)];
     end
+
+    %     if pksFiltTemp(iPksFilt) == 1
+    %
+    %         if pksFiltTemp(iPksFilt-1) == 1 && locsFilt(iPksFilt) - locsFilt(iPksFilt-1) > 100
+    %             pksFiltTemp(iPksFilt:end+1) = pksFiltTemp(iPksFilt-1:end);
+    %             pksFiltTemp(iPksFilt-1) = 0;
+    %
+    %             locsFilt(iPksFilt:end+1) = locsFilt(iPksFilt-1:end);
+    %             locsFilt(iPksFilt-1) = locsFilt(iPksFilt-1)-1;
+    %         end
+    %
+    %
+    %         if pksFiltTemp(iPksFilt+1) == 1 && locsFilt(iPksFilt+1) - locsFilt(iPksFilt) > 100
+    %             pksFiltTemp(iPksFilt+2:end+1) = pksFiltTemp(iPksFilt+1:end);
+    %             pksFiltTemp(iPksFilt+1) = 0;
+    %
+    %             locsFilt(iPksFilt+2:end+1) = locsFilt(iPksFilt+1:end);
+    %             locsFilt(iPksFilt+1) = locsFilt(iPksFilt+1)-1;
+    %         end
+    %
+    %         if pksFiltTemp(iPksFilt-1) == 0 && pksFiltTemp(iPksFilt+1) == 0
+    %             pksSingle = [pksSingle; locsFilt(iPksFilt)];
+    %         end
+    %
+    %     end
+
 end
 
 for iPksFilt = 1:length(pksFilt)
@@ -101,10 +127,10 @@ for iPksFilt = 2:length(pksFilt)
                 break;
             end
         end
-%         exist kineticRoundIndex
-%         if ans == 0
-%             kineticRoundIndex = 2;
-%         end
+        %         exist kineticRoundIndex
+        %         if ans == 0
+        %             kineticRoundIndex = 2;
+        %         end
         kineticRound(1:kineticRoundIndex) = [];
         tempFrames(1:kineticRoundIndex)   = [];
         tempKinetic(1:kineticRoundIndex) = [];
@@ -112,7 +138,7 @@ for iPksFilt = 2:length(pksFilt)
     end
     kineticRound(kineticRound<=peakThreshold) = 0;
     kineticRound(kineticRound>peakThreshold) = 1;
-%     plot(tempFrames, tempKinetic, 'k*')
+    %     plot(tempFrames, tempKinetic, 'k*')
 
     for i = 1:length(kineticRound)-1
         if kineticRound(i) == 0 && mean(kineticRound(i+1:end)) == 1

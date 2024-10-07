@@ -15,7 +15,7 @@ addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline')
 addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/EEG_preprocessing')
 addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/AMICA_processing')
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'};
 Sessions     = {'01'; '02'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
