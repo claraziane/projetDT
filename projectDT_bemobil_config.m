@@ -66,7 +66,7 @@ bemobil_config.resample_freq = [];
 %                                           If empty, use only chan_detected_fraction_threshold. Can be either a fraction 
 %                                           of all channels (will be rounded, e.g. 1/5 of chans) or a specific integer number
 
-bemobil_config.chancorr_crit = 0.6;
+bemobil_config.chancorr_crit = 0.7;
 bemobil_config.chan_max_broken_time = 0.5;
 bemobil_config.chan_detect_num_iter = 10;
 bemobil_config.chan_detected_fraction_threshold = 0.5;
@@ -91,7 +91,7 @@ bemobil_config.channel_locations_filename = [];
 
 % Set the whole 'bemobil_config.zaplineConfig' field to [] if no noise is present in your data (haha).
 
-bemobil_config.zaplineConfig.noisefreqs = [60]; 
+bemobil_config.zaplineConfig.noisefreqs = 60; 
 
 %% AMICA Parameters
 
