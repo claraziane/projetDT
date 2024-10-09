@@ -38,20 +38,17 @@ extRoot  = '_events.set';
 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 projectDT_bemobil_config
-for iParticipant = 5:7%length(Participants)
+for iParticipant = length(Participants)
 
     for iSession = 1%:length(Sessions)
 
         pathExport = [pathImport 'All/' Sessions{iSession} '/'];
         pathRoot  = fullfile(pathImport, Participants{iParticipant}, Sessions{iSession}, '/EEG');
 
-%         load([pathExport 'chanReject.mat'])
-%         load([pathExport 'icReject.mat'])
+        load([pathExport 'chanReject.mat'])
 
         for iCondition = 1:length(Conditions)
-            path2save = [pathImport '03_Preprocessing' filesep  Participants{iParticipant} filesep Sessions{iSession} filesep  Conditions{iCondition}];
-              
-            condStr = Conditions{iCondition};
+            path2save = [pathImport '03_Preprocessing' filesep  Participants{iParticipant} filesep Sessions{iSession} filesep  Conditions{iCondition}];           
 
             % Load
             fileRead = [Conditions{iCondition} extRoot];
@@ -77,20 +74,6 @@ for iParticipant = 5:7%length(Participants)
 
             %% Interpolation of bad channels and average reference
             [ALLEEG, EEG, CURRENTSET] = bemobil_interp_avref(EEG , ALLEEG, CURRENTSET, chans_to_interp, 'preprocessed.set', path2save);
-%             EEG = eeg_checkset(EEG);
-% 
-%             % Remove baseline of the signal (must be before filtering)
-%             EEG = pop_rmbase(EEG, [],[]);
-%             EEG = eeg_checkset(EEG);
-
-            %% ICA decomposition
-
-%             [ALLEEG, EEG, CURRENTSET] = bemobil_process_all_AMICA(ALLEEG, EEG, CURRENTSET, str2num(Participants{iParticipant}(end)), Sessions{iSession}, condStr, bemobil_config);
-% 
-%             icReject.([Participants{iParticipant}]).([Conditions{iCondition}]) = EEG.etc.ic_cleaning.ICs_throw;
-%             save([pathExport '/icReject.mat'], 'icReject');
-
-            ALLEEG = [];
 
         end %Conditions
 
