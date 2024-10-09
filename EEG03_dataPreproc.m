@@ -23,6 +23,7 @@ else
     addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline');    % Bemobil pipeline
     addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/EEG_preprocessing')
     addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/AMICA_processing')
+    addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/zapline-plus-main')
 end
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'};
@@ -37,7 +38,7 @@ extRoot  = '_events.set';
 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 projectDT_bemobil_config
-for iParticipant = 8:length(Participants)
+for iParticipant = 5:7%length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -51,7 +52,7 @@ for iParticipant = 8:length(Participants)
             path2save = [pathImport '03_Preprocessing' filesep  Participants{iParticipant} filesep Sessions{iSession} filesep  Conditions{iCondition}];
               
             condStr = Conditions{iCondition};
-            tic
+
             % Load
             fileRead = [Conditions{iCondition} extRoot];
             EEG = pop_loadset('filename', fileRead,'filepath', pathRoot);
@@ -75,22 +76,22 @@ for iParticipant = 8:length(Participants)
             save([pathExport '/chanReject.mat'], 'chanReject');
 
             %% Interpolation of bad channels and average reference
-            [ALLEEG, EEG, CURRENTSET] = bemobil_interp_avref(EEG , ALLEEG, CURRENTSET, chans_to_interp);
-            EEG = eeg_checkset(EEG);
-
-            % Remove baseline of the signal (must be before filtering)
-            EEG = pop_rmbase(EEG, [],[]);
-            EEG = eeg_checkset(EEG);
+            [ALLEEG, EEG, CURRENTSET] = bemobil_interp_avref(EEG , ALLEEG, CURRENTSET, chans_to_interp, 'preprocessed.set', path2save);
+%             EEG = eeg_checkset(EEG);
+% 
+%             % Remove baseline of the signal (must be before filtering)
+%             EEG = pop_rmbase(EEG, [],[]);
+%             EEG = eeg_checkset(EEG);
 
             %% ICA decomposition
 
-            [ALLEEG, EEG, CURRENTSET] = bemobil_process_all_AMICA(ALLEEG, EEG, CURRENTSET, str2num(Participants{iParticipant}(end)), Sessions{iSession}, condStr, bemobil_config);
-
-            icReject.([Participants{iParticipant}]).([Conditions{iCondition}]) = EEG.etc.ic_cleaning.ICs_throw;
-            save([pathExport '/icReject.mat'], 'icReject');
+%             [ALLEEG, EEG, CURRENTSET] = bemobil_process_all_AMICA(ALLEEG, EEG, CURRENTSET, str2num(Participants{iParticipant}(end)), Sessions{iSession}, condStr, bemobil_config);
+% 
+%             icReject.([Participants{iParticipant}]).([Conditions{iCondition}]) = EEG.etc.ic_cleaning.ICs_throw;
+%             save([pathExport '/icReject.mat'], 'icReject');
 
             ALLEEG = [];
-            toc
+
         end %Conditions
 
     end %Sessions
