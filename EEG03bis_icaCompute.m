@@ -15,6 +15,7 @@ else
     pathImport = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/';
     addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1')  % EEGLab
     addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline');    % Bemobil pipeline
+    addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/EEG_preprocessing')
     addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/AMICA_processing')
 end
 
@@ -30,12 +31,12 @@ fileName  = 'preprocessed.set';
 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 projectDT_bemobil_config
-for iParticipant = 1:7%8:length(Participants)
+for iParticipant = 8:length(Participants)
 
     for iSession = 1%:length(Sessions)
 
-        pathExport = [pathImport '03_Preprocessing/All/' Sessions{iSession} '/'];
-%         load([pathExport 'icReject.mat'])
+        pathExport = [pathImport 'All/' Sessions{iSession} '/'];
+        load([pathExport 'icReject.mat'])
 
         for iCondition = 1:length(Conditions)
            

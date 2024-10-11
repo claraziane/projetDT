@@ -7,7 +7,7 @@ heartData = detrend(heartData - mean(heartData)); % Center around 0 and remove o
 figure; plot(heartData); title('ECG'); hold on;
 
 % Find envelop peaks
-peakThreshold = 50;
+peakThreshold = 300;
 [heartValues,heartOnsets] = findpeaks(heartData, 'MinPeakHeight', peakThreshold, 'MinPeakDistance', 250);
 plot(heartOnsets, heartValues, 'r*');
 
