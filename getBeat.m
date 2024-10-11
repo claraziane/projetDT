@@ -54,7 +54,7 @@ for iPksFilt = 2:length(pksFilt)
     tempBeat = audioInv(locs(I-nPeaks:I));
     tempFrames = locs(I-nPeaks:I);
     beatRound = round(tempBeat,3);
-    
+
     % beatRound must be in one column
     if size(beatRound,1) == 1
         beatRound = beatRound';

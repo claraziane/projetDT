@@ -3,7 +3,12 @@ clear all;
 clc;
 
 % Declare paths
-pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
+[ret, Computer] = system('hostname');
+if strcmpi({Computer(end-5:end-1)}, 'BRAMS')
+    pathData = ('C:\Users\p1208638\OneDrive - Universite de Montreal\Projets\projetDT\DATA\');
+else
+    pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
+end
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'};
 Sessions     = {'01'};

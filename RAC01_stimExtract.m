@@ -3,9 +3,14 @@ close all;
 clc;
 
 % Declare paths
-pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
+[ret, Computer] = system('hostname');
+if strcmpi({Computer(end-5:end-1)}, 'BRAMS')
+    pathData = ('C:\Users\p1208638\OneDrive - Universite de Montreal\Projets\projetDT\DATA\');
+else
+    pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
+end
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'};
 Sessions     = {'01'};
 Conditions   = {'stimRestST'; 'stimTapST'; 'stimWalkST';...
                 'stimRestDT'; 'stimTapDT'; 'stimWalkDT';...
@@ -26,7 +31,7 @@ for iParticipant = length(Participants)
             load([pathExport 'dataRAC.mat'])
         end
 
-        for iCondition = 1:length(Conditions) 
+        for iCondition = 4:length(Conditions) 
 
             % Load data
             load([pathImport '/Audio/' Conditions{iCondition} '.mat'], 'dataAudio')
@@ -34,9 +39,9 @@ for iParticipant = length(Participants)
             Freq  = Data.(Conditions{iCondition}).Analog.Frequency;
 
             % Define BPM
-            if strcmp(Conditions{iCondition}(5:8), 'Walk') || strcmp(Conditions{iCondition}(5:8), 'Rest')
+            if strcmp(Conditions{iCondition}(5:8), 'Walk')
                 preferredBPM = dataAudio.walkBPM;
-            elseif strcmp(Conditions{iCondition}(5:7), 'Tap')
+            elseif strcmp(Conditions{iCondition}(5:7), 'Tap') || strcmp(Conditions{iCondition}(5:8), 'Rest')
                 preferredBPM = dataAudio.tapBPM  ;
             end
             
