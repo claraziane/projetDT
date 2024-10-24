@@ -5,7 +5,7 @@ clc;
 % Declare paths
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
 Sessions     = {'01'; '02'; '03'};
 
 Conditions   = {'stimTap'; 'stimWalk';...
@@ -13,7 +13,7 @@ Conditions   = {'stimTap'; 'stimWalk';...
 Variables    = {'imiMean'; 'imiCV'; 'phaseAngleMean'; 'resultantLength'; 'power'; 'phaseR'; 'stabilityIndex'};
 
 
-for iParticipant = 1:length(Participants)
+for iParticipant = length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -38,7 +38,7 @@ for iParticipant = 1:length(Participants)
                     scoreDT = resultsEEG.([Conditions{iCondition} 'DT']).([Variables{iVar}]);
                 end
 
-                resultsDtCost.(Conditions{iCondition}).(Variables{iVar}) = ((scoreDT - scoreST) / scoreST)*100;
+                resultsDtCost.(Conditions{iCondition}).(Variables{iVar}) = (abs(scoreDT - scoreST) / scoreST)*100;
 
             end % end Variables
 

@@ -13,107 +13,27 @@
 %
 % C. Ziane
 
-function[beatFreq, BPM, IOI, beatOnset] = getBeat(Audio, Freq, preferredBPM)
+function[beatFreq, BPM, IOI, beatOnset] = getBeat_fastStim(Audio, Freq, preferredBPM)
 
 figure; plot(Audio); hold on;
 
-% Centering the signal around 0
-audioInv = detrend(Audio - mean(Audio));
-beatFreq = (Freq*60)/preferredBPM; % Number of frames inbetween two beats
+[pks, locs] = findpeaks(Audio, 'MinPeakHeight', 0);
+plot(locs, pks, 'k*'); hold on;
+interval = 2000/(preferredBPM/60);
+beatOnset = [];
+beatValue = [];
+nBeats = preferredBPM*5;
 
-[pks, locs] = findpeaks(audioInv, 'MinPeakHeight', 0);
-audioEnv = interp1(locs, pks, [1:length(audioInv)])';
-audioEnv(isnan(audioEnv)) = 0;
-% figure; plot(audioEnv); hold on;
+first = 1;
+[value, index] = min(abs(locs-interval));
+for iBeat = 1:nBeats
+    [value, minIndex] = min((pks(first:index)));
 
-% Low-pass filter audio signal at 5 Hz to get signal envelop
-[f,e] = butter(2,2*5/Freq);
-envFilt = filtfilt(f,e,abs(audioEnv));
-% plot(envFilt)
-
-% Find envelop peaks
-peakThreshold = 0.05;
-[pksFilt, locsFilt] = findpeaks(envFilt); %plot(locsFilt, envFilt(locsFilt), 'r*')
-
-% Only keep one peak per beat
-locsFilt(pksFilt < peakThreshold) = [];
-pksFilt(pksFilt < peakThreshold)  = [];
-pksFilt = envFilt(locsFilt);
-
-% Find peaks corresponding to beat onsets
-minPeak =  -0.01;
-peakThreshold = 0.01;
-[pks,locs] = findpeaks(audioInv, 'MinPeakHeight', minPeak);
-
-beatOnset = []; beatValue = [];
-singleIndex = 1;
-for iPksFilt = 2:length(pksFilt)
-    nPeaks = 100; %Number of peaks to include before trigger
-    [M, I] = min(abs(locs-locsFilt(iPksFilt)));
-    singleIndex = singleIndex+1;
-    tempBeat = audioInv(locs(I-nPeaks:I));
-    tempFrames = locs(I-nPeaks:I);
-    beatRound = round(tempBeat,3);
-
-    % beatRound must be in one column
-    if size(beatRound,1) == 1
-        beatRound = beatRound';
-    end
-
-    if beatRound(1) > 0
-        for iBeatRound = 1:length(beatRound)
-            if beatRound(iBeatRound) <= peakThreshold && beatRound(iBeatRound+1) <= peakThreshold
-                beatRoundIndex = iBeatRound-1;
-                break;
-            end
-        end
-        beatRound(1:beatRoundIndex) = [];
-        tempFrames(1:beatRoundIndex)   = [];
-        tempBeat(1:beatRoundIndex) = [];
-    end
-    beatRound(beatRound<peakThreshold) = 0;
-    beatRound(beatRound>=peakThreshold) = 1;
-%     plot(tempFrames, Audio(tempFrames), 'k*')
-
-    for i = 2:length(beatRound)-1
-        if beatRound(i) == 0 && beatRound(i+1) == 1
-            if beatRound(i-1) == 1
-                beatRound(i) = 1;
-            end
-        end
-    end
-    beatRound(end) = 1;
-
-     for i = 2:length(beatRound)-1
-        if beatRound(i) == 1 && beatRound(i+1) == 0
-            if beatRound(i-1) == 0
-                beatRound(i) = 0;
-            end
-        end
-    end
-
-    for i = 1:length(beatRound)-1
-        if beatRound(i) == 1 && mean(beatRound(1:i-1)) == 0
-            tempFrames(1:i-2) = [];
-            break;
-        end
-    end
-
-    if mean(beatRound) == 1
-        [maxTempBeat, indexTempBeat] = max(abs(diff(tempBeat)));
-        tempFrames(2) = tempFrames(indexTempBeat+1);
-    end
-
-    if tempFrames(2) - tempFrames(1) > beatFreq/4
-        tempFrames(1) = [];
-    end
-    beatIndex = tempFrames(1);
-%     while audioInv(beatIndex) <= 0
-%         beatIndex = beatIndex-1;
-%     end
-    beatOnset = [beatOnset; beatIndex];
-    beatValue = [beatValue; Audio(beatIndex)];
-
+    beatOnset = [beatOnset; locs(minIndex+(first-1))];
+    beatValue = [beatValue; value];
+ 
+    first = index+1;
+    [value, index] = min(abs(locs-(locs(index)+interval-1)));
 end
 plot(beatOnset, beatValue, 'r*')
 

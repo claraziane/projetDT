@@ -5,8 +5,10 @@ clc;
 % Declare paths
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
+addpath('/Users/claraziane/Documents/Académique/Informatique/CircStat2012a/');
 
-Participants = {'P01'; 'P02'; 'P07'; 'P08'; 'P09'};
+
+Participants = {'P01'; 'P02'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
 Sessions     = {'01'; '02'; '03'};
 
 Conditions   = {'stimTapST'; 'stimWalkST'; 'syncTapST'; 'syncWalkST';...
@@ -35,8 +37,12 @@ for iSession = 1%:length(Sessions)
                     % Load data
                     load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsSync.mat'])
                     load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsECG.mat'])
-                    
-                    dataX(iParticipant,iCondition) = resultsSync.(Conditions{iCondition}).(varX{iX});
+
+                    if strcmpi(varX{iX}, 'resultantLength')
+                         dataX(iParticipant,iCondition) = log(resultsSync.(Conditions{iCondition}).(varX{iX}) ./ (1-resultsSync.(Conditions{iCondition}).(varX{iX})));          
+                    else
+                        dataX(iParticipant,iCondition) = rad2deg(resultsSync.(Conditions{iCondition}).(varX{iX}));
+                    end
                     dataY(iParticipant,iCondition) = resultsECG.(Conditions{iCondition}).(varY{iY});
 
                 end

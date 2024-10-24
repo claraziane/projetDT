@@ -6,17 +6,17 @@ clc;
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
 Sessions     = {'01'; '02'; '03'};
 
 Conditions   = {'stimTap'; 'stimWalk';...
                 'syncTap'; 'syncWalk'};
 
-varX = {'Flexibility'; 'Inhibition'; 'workingMemory'}; %; 'BTI'
-varY = {'imiMean'; 'imiCV'; 'phaseAngleMean'; 'resultantLength'; 'power'; 'phaseR'; 'stabilityIndex'};
+varX = {'Flexibility'; 'Inhibition'; 'workingMemory'}; %'stabilityIndex'; ;  'BTI'
+varY = {'imiCV'; 'phaseAngleMean'; 'resultantLength';'stabilityIndex'}; %'imiMean';  'power'; 'phaseR'; 
 
-xLabels = {'Flexibility'; 'Inhibition'; 'Working Memory'; 'Beat Tracking Index'};
-yLabels = {'Inter-Movement Interval (ms)'; 'Coefficient of Variation_{Inter-Movement Interval}'; 'Synchronization Accuracy (°)'; 'Synchronization Consistency (logit)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence'; 'Stability Index (Hz)'};
+xLabels = {'Flexibility'; 'Inhibition'; 'Working Memory';}; % 'Stability Index (Hz)';  'Beat Tracking Index'
+yLabels = { 'Coefficient of Variation_{Inter-Movement Interval}'; 'Synchronization Accuracy (°)'; 'Synchronization Consistency (logit)'; 'Stability Index (Hz)'}; %'Inter-Movement Interval (ms)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence'; 
 
 for iSession = 1%:length(Sessions)
     iFig = 1;
@@ -24,7 +24,7 @@ for iSession = 1%:length(Sessions)
     for iX = 1:length(varX)
         xLabel = (xLabels{iX});
 
-        for iY = 1:length(varY)
+        for iY = length(varY)
             yLabel = (yLabels{iY});
 
             for iCondition = 1:length(Conditions)
@@ -41,6 +41,7 @@ for iSession = 1%:length(Sessions)
                         load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsCog.mat'])
                         dataX(iParticipant,iCondition) = resultsCog.(varX{iX});
                     end
+%                     dataX(iParticipant,iCondition) = resultsDtCost.(Conditions{iCondition}).(varX{iX});
 
                     dataY(iParticipant,iCondition) = resultsDtCost.(Conditions{iCondition}).(varY{iY});
 
@@ -48,7 +49,7 @@ for iSession = 1%:length(Sessions)
 
             end
             % Plot
-            plotCorrel(dataX, dataY, xLabel, yLabel, Conditions, 'Spearman')
+            plotCorrel(dataX, dataY, xLabel, yLabel, Conditions, 'Pearson')
             saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/fig_' varY{iY} 'vs' varX{iX} '.png']);
 
             clear dataX dataY

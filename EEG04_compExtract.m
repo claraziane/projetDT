@@ -15,7 +15,7 @@ pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/GED-master/'); %For Gaussian filtering
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
 Sessions     = {'01'; '02'; '03'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -27,7 +27,7 @@ Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
 sFWHM = 0.5; % FWHM of stim frequency
 
 eeglab;
-for iParticipant = 3%length(Participants)
+for iParticipant = length(Participants)
     disp(Participants{iParticipant})
 
     for iSession = 1%:length(Sessions)
@@ -35,7 +35,7 @@ for iParticipant = 3%length(Participants)
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
 
-        for iCondition = 7:length(Conditions)
+        for iCondition = 11%:length(Conditions)
 
             % Create folder for participant's results if does not exist
             pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/', Conditions{iCondition}, '/');
@@ -49,11 +49,6 @@ for iParticipant = 3%length(Participants)
             EEG = pop_loadset('filename', fileRead,'filepath', pathImport);
             [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','on');
             freqEEG = EEG.srate;
-
-%             % Remove accelerometer data
-%             EEG = pop_select(EEG, 'nochannel', {'ECG'; 'x_dir'; 'y_dir'; 'z_dir'});
-%             [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'overwrite','on','gui','off');
-%             EEG = eeg_checkset(EEG);
             chanLocs = EEG.chanlocs;
 
             % Electrode used for 'best-electrode' analyses
@@ -295,6 +290,7 @@ for iParticipant = 3%length(Participants)
             ALLEEG = [];
 
             close all
+            eeglab
 
         end
         clear RAC

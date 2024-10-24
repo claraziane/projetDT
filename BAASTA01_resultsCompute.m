@@ -6,7 +6,7 @@ clc;
 pathData    = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/RAW/';
 pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/';
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'};
 Sessions     = {'01'}; %; '02'
 
 testName      = { 'BAT'; 'pacedTap'}; %'Anisochrony'; ; 'Adaptive'
@@ -22,7 +22,8 @@ Extensions    = {'_CV_iti';...
 % '_adaptation_index_acceleration'; '_adaptation_index_decelaration'; '_iso_600_CV_iti'; '_plus_75_dprime1'; '_plus_75_dprime2'; '_plus_30_dprime1'; '_plus_30_dprime2'; '_minus_75_dprime1'; '_minus_75_dprime2'; '_minus_30_dprime1'; '_minus_30_dprime2';
 
 % Import test scores
-Scores = readtable('/Volumes/p-rwage-indivdiff/baasta-scored/_SUMMARY_scored-pybaasta-0.8.1-newscoring.dev24-modified-TABA/all-scores.csv');
+% Scores = readtable('/Volumes/p-rwage-indivdiff/baasta-scored/_SUMMARY_scored-pybaasta-0.8.1-newscoring.dev24-modified-TABA/all-scores.csv');
+Scores = readtable('/Users/claraziane/Downloads/all-scores.csv');
 
 for iParticipant = 1:length(Participants)
 

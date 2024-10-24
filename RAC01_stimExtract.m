@@ -10,7 +10,7 @@ else
     pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
 end
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
 Sessions     = {'01'};
 Conditions   = {'stimRestST'; 'stimTapST'; 'stimWalkST';...
                 'stimRestDT'; 'stimTapDT'; 'stimWalkDT';...
@@ -31,7 +31,7 @@ for iParticipant = length(Participants)
             load([pathExport 'dataRAC.mat'])
         end
 
-        for iCondition = 4:length(Conditions) 
+        for iCondition = 1:length(Conditions) 
 
             % Load data
             load([pathImport '/Audio/' Conditions{iCondition} '.mat'], 'dataAudio')
@@ -49,7 +49,11 @@ for iParticipant = length(Participants)
             Audio = Data.([Conditions{iCondition}]).Analog.Data(1,1:Freq*60*5);
 
             % Extract beat frequency, BPM, and IOI
+%             if strcmpi(Conditions{iCondition}(5:8), 'Walk')
             [beatFreq, BPM, IOI, beatOnset] = getBeat(Audio, Freq, preferredBPM);
+%             else
+%                 [beatFreq, BPM, IOI, beatOnset] = getBeat_fastStim(Audio, Freq, preferredBPM);
+%             end
 
             % Extract beat category
             if strcmpi(Conditions{iCondition}(end-1:end), 'DT')
