@@ -17,7 +17,7 @@ Conditions   = {'testTap';
                 'stimTapST'; 'stimTapDT';...
                 'syncTapST'; 'syncTapDT'};
             
-for iParticipant = length(Participants)-1
+for iParticipant = length(Participants)
 
     for iSession = 1
 
@@ -31,7 +31,7 @@ for iParticipant = length(Participants)-1
             load([pathExport 'dataTap.mat'])
         end
 
-        for iCondition = 2:length(Conditions)
+        for iCondition = 4:length(Conditions)
 
             Data  = load([pathImport Conditions{iCondition} '.mat']);
             Freq  = Data.(Conditions{iCondition}).Analog.Frequency;

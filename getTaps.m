@@ -71,7 +71,7 @@ pksFilt(pksFilt < peakThreshold) = [];
 
 % Find peaks corresponding to tap max force
 itiTemp =  min(diff(locsFilt));
-[pks,locs] = findpeaks(tapData, 'MinPeakHeight', peakThreshold, 'MinPeakDistance', itiTemp/4);
+[pks,locs] = findpeaks(tapData, 'MinPeakHeight', peakThreshold, 'MinPeakDistance', itiTemp/3);
 % plot(locs, tapData(locs), 'k*')
 
 % Find tap onsets
