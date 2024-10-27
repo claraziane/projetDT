@@ -31,7 +31,7 @@ for iParticipant = length(Participants)
             load([pathExport 'dataTap.mat'])
         end
 
-        for iCondition = 4:length(Conditions)
+        for iCondition = 1%2:length(Conditions)
 
             Data  = load([pathImport Conditions{iCondition} '.mat']);
             Freq  = Data.(Conditions{iCondition}).Analog.Frequency;

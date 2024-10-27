@@ -15,7 +15,7 @@ pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/GED-master/'); %For Gaussian filtering
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'};
 Sessions     = {'01'; '02'; '03'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -35,7 +35,7 @@ for iParticipant = length(Participants)
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
 
-        for iCondition = 11%:length(Conditions)
+        for iCondition = 1:length(Conditions)
 
             % Create folder for participant's results if does not exist
             pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/', Conditions{iCondition}, '/');
