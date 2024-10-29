@@ -32,7 +32,7 @@ envFilt = filtfilt(f,e,abs(audioEnv));
 % plot(envFilt)
 
 % Find envelop peaks
-peakThreshold = 0.05;
+peakThreshold = 0.09;
 [pksFilt, locsFilt] = findpeaks(envFilt); %plot(locsFilt, envFilt(locsFilt), 'r*')
 
 % Only keep one peak per beat

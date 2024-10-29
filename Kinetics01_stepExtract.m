@@ -1,5 +1,5 @@
 clear all; 
-% close all;
+close all;
 clc;
 
 % Declare paths
@@ -10,7 +10,7 @@ else
     pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
 end
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
 Sessions     = {'01'};
 Conditions   = {'testWalk';
                 'noneWalkST';
@@ -31,7 +31,7 @@ for iParticipant = length(Participants)
             load([pathExport 'dataStep.mat'])
         end
 
-        for iCondition = 2:length(Conditions)
+        for iCondition = 1%2:length(Conditions)
 
             Data  = load([pathImport Conditions{iCondition} '.mat']);
             Freq  = Data.(Conditions{iCondition}).Force(1).Frequency;

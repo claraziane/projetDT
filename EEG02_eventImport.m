@@ -9,11 +9,18 @@ clear all;
 clc;
 
 % Declare paths
-pathData    = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/');
-pathResults = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
-addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1')
+[ret, Computer] = system('hostname');
+if strcmpi({Computer(end-5:end-1)}, 'BRAMS')
+    pathData = ('C:\Users\p1208638\OneDrive - Universite de Montreal\Projets\projetDT\DATA\Processed\');
+    pathResults = ('C:\Users\p1208638\OneDrive - Universite de Montreal\Projets\projetDT\Results\');
+    addpath 'C:\Users\p1208638\OneDrive - Universite de Montreal\Documents\MATLAB\Toolbox\eeglab2021.1\eeglab2021.1'
+else
+    pathData    = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/');
+    pathResults = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
+    addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1')
+end
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
 Sessions     = {'01'; '02'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
