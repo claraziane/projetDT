@@ -6,6 +6,7 @@ clc;
 [ret, Computer] = system('hostname');
 if strcmpi({Computer(end-5:end-1)}, 'BRAMS')
     pathData = ('C:\Users\p1208638\OneDrive - Universite de Montreal\Projets\projetDT\DATA\');
+    data     = readtable('C:\Users\p1208638\OneDrive - Universite de Montreal\Projets\projetDT\Results\All\demographicInfo.xlsx');
 else
     pathData = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/');
     data     = readtable('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/demographicInfo.xlsx');
@@ -19,7 +20,7 @@ Conditions   = {'noneWalkST';
 
 distance = (28.31*2.54)*10;
 
-for iParticipant = length(Participants)-1
+for iParticipant = 2:length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -32,65 +33,33 @@ for iParticipant = length(Participants)-1
                 treadmillSpeed = table2array(data(iLine,8));
             end
         end
-
+   
         if ~exist(pathExport, 'dir')
             mkdir(pathExport)
         elseif exist([pathExport 'dataStep.mat'], 'file')
             load([pathExport 'dataStep.mat'])
         end
 
-        for iCondition = 2%1:length(Conditions)
+        for iCondition = 1:length(Conditions)
 
-            Data  = load([pathImport Conditions{iCondition} '.mat']);
-            Freq  = Data.(Conditions{iCondition}).Force(1).Frequency;
-
-            if strcmpi(Conditions{iCondition}(1:4), 'test')
-                Time = Freq*60*1;
-            else
-                Time = Freq*60*5;
-            end
+            Kinetics  = load([pathImport Conditions{iCondition} '.mat']);
+            Freq  = Kinetics.(Conditions{iCondition}).Force(1).Frequency;
+            frameHour = Freq*3600;
+            speedFrame = (treadmillSpeed*1000000)/frameHour; %in cm by frame
 
             % Extact kenetic data from structure
-            Kinetics = Data.(Conditions{iCondition}).Force(1).Force(3,1:Time)+...
-                Data.(Conditions{iCondition}).Force(2).Force(3,1:Time);
-            Kinetics = Kinetics(~isnan(Kinetics));
-
-            copLatFront = Data.(Conditions{iCondition}).Force(2).COP(1,:);
-            copLatFront = copLatFront(~isnan(copLatFront));
-            copForwardFront = Data.(Conditions{iCondition}).Force(2).COP(2,:);
+            copForwardFront = Kinetics.(Conditions{iCondition}).Force(2).COP(2,:);
             copForwardFront = copForwardFront(~isnan(copForwardFront));
-
-            copLatRear = Data.(Conditions{iCondition}).Force(1).COP(1,:);
-            copLatRear = copLatRear(~isnan(copLatRear));
-            copForwardRear = Data.(Conditions{iCondition}).Force(1).COP(2,:) - distance;
-            copForwardRear = copForwardRear(~isnan(copForwardRear));
 
             copOnset = [];
             copLoc   = [];
             stepOnsets = Steps.(Conditions{iCondition}).stepOnsets;
             for iStep = 2:length(stepOnsets)-1
                 copFrontTemp = copForwardFront(stepOnsets(iStep)-100:stepOnsets(iStep)+100);
-%                 copRearTemp  = copForwardRear(stepOnsets(iStep)-100:stepOnsets(iStep)+100);
-                % figure; plot(copForward);
                 [frontMax, frontFrame] = max(copFrontTemp);
-%                 [rearMax, rearFrame] = max(copRearTemp);
-%                 if rearMax < frontMax
+
                     copOnset = [copOnset; frontFrame];
                     copLoc   = [copLoc; frontMax];
-
-%                 elseif rearMax > frontMax
-%                     figure; subplot(1,2,1), plot(copFrontTemp); ylabel('Antero-Posterior Displacement'); title('Front')
-%                     subplot(1,2,2), plot(copRearTemp); ylabel('Antero-Posterior Displacement'); title('Rear')
-%                     Action = input('Do you want to use front [1], or rear[2] value ?');
-%                     if Action == 1
-%                         copOnset = [copOnset; frontFrame];
-%                         copLoc   = [copLoc; frontMax];
-%                     elseif Action == 2
-%                         copOnset = [copOnset; rearFrame];
-%                         copLoc   = [copLoc; rearMax];
-%                     end
-%                     close;
-%                  end
 
                 if copOnset(end) < 101
                     copOnset(end) = stepOnsets(iStep) - (101 - copOnset(end));
@@ -101,35 +70,29 @@ for iParticipant = length(Participants)-1
                 end
 
             end
-            ISI = diff(copOnset);
-
-            for iStep = 1:length(copOnset)-1
-                time = copOnset(iStep+1) - copOnset(iStep+1);
-                distance = 0;
-            end
             
+            stepLength = [];
+            for iStep = 1:length(copOnset)-1
+                time = copOnset(iStep+1) - copOnset(iStep);
+                copDist = copLoc(iStep+1) - copLoc(iStep);
+                stepLength = [stepLength;(speedFrame*time)+copDist];
+            end
+           
+            stepLength(stepLength > (mean(stepLength)*2)) = [];
+            stepLength(stepLength < 0) = [];
+            figure; plot(stepLength)
+            
+            % Store data in structure
+            Steps.(Conditions{iCondition}).stepLength = stepLength;
+            
+            % Save structure
+            save([pathExport '/dataStep'], 'Steps');
 
-
-            %             % Low-pass filter audio signal at 5 Hz to get signal envelop
-            %             [f,e] = butter(2,5*10/Freq);
-            %             copLatRearFilt = filtfilt(f,e,copLatRear);
-            %             copForwardRearFilt = filtfilt(f,e,copForwardRear);
-            %             copLatFrontFilt = filtfilt(f,e,copLatFront);
-            %             copForwardFrontFilt = filtfilt(f,e,copForwardFront);
-            %
-            %             for iStep = 1:length(stepOnsets)
-            %                 figure;
-            %                 subplot(2,2,1); plot(copLatFrontFilt(stepOnsets(iStep):stepOnsets(iStep+1)-1)); ylabel('Medio-Lateral Displacement'); title('Front')
-            %                 subplot(2,2,2); plot(copLatRearFilt(stepOnsets(iStep):stepOnsets(iStep+1)-1)); title('Rear')
-            %                 subplot(2,2,3); plot(copForwardFrontFilt(stepOnsets(iStep):stepOnsets(iStep+1)-1)); ylabel('Antero-Posterior Displacement')
-            %                 subplot(2,2,4); plot(copForwardRearFilt(stepOnsets(iStep):stepOnsets(iStep+1)-1));
-            %             end
-
-            clear copLatRear copForwardRear stepOnsets
-            close all;
-
+            clear copForwardFront copFrontTemp stepOnsets Kinetics
+            close;
+            
         end
-        clear Steps
+        clear Steps 
 
     end
 

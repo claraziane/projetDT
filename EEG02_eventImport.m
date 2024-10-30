@@ -178,7 +178,7 @@ for iParticipant = length(Participants)
             resultsECG.([Conditions{iCondition}]).ibiMean(:,1)     = ibiMean;     % Storeinter-beat interval mean in structure
             resultsECG.([Conditions{iCondition}]).ibiCV(:,1)       = ibiCV;       % Store inter-beat interval coefficient of varation in structure          
             resultsECG.([Conditions{iCondition}]).sampFreq         = sampFreq;    % Store ECG data sampling frequency in structure          
-           
+                    
             % Save structure
             save([pathExport 'resultsECG.mat'], 'resultsECG');
 

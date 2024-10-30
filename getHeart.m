@@ -2,12 +2,15 @@ function [heartOnsets, heartRate, BPM,  IBI, ibiMean, ibiCV] = getHeart(heartDat
 
 warning('on')
 
-heartData = (heartData(~isnan(heartData)))* -1;
+heartData = (heartData(~isnan(heartData))) * -1 ;
 heartData = detrend(heartData - mean(heartData)); % Center around 0 and remove offset
+for iInterval = 1:2000:length(heartData)
+    heartData(iInterval:iInterval+1999) = heartData(iInterval:iInterval+1999) - mean(heartData(iInterval:iInterval+1999));
+end
 figure; plot(heartData); title('ECG'); hold on;
 
 % Find envelop peaks
-peakThreshold = 300;
+peakThreshold = 200;
 [heartValues,heartOnsets] = findpeaks(heartData, 'MinPeakHeight', peakThreshold, 'MinPeakDistance', 250);
 plot(heartOnsets, heartValues, 'r*');
 
