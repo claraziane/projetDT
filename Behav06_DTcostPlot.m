@@ -12,16 +12,16 @@ Sessions     = {'01'; '02'; '03'};
 Conditions   = {'stimTap'; 'stimWalk';...
                 'syncTap'; 'syncWalk'};
 
-varX = {'Flexibility'; 'Inhibition'; 'workingMemory'}; %'stabilityIndex'; ;  'BTI'
+varX = {'Flexibility'; 'Inhibition'; 'workingMemory'; 'stabilityIndex'}; %; ;  'BTI'
 varY = {'imiCV'; 'phaseAngleMean'; 'resultantLength';}; %'imiMean';  'power'; 'phaseR'; 'stabilityIndex'
 
 xLabels = {'Flexibility'; 'Inhibition'; 'Working Memory';}; % 'Stability Index (Hz)';  'Beat Tracking Index'
-yLabels = { 'Coefficient of Variation_{Inter-Movement Interval}'; 'Synchronization Accuracy (Â°)'; 'Synchronization Consistency (logit)'}; %'Inter-Movement Interval (ms)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence'; ; 'Stability Index (Hz)'
+yLabels = { 'Coefficient of Variation_{Inter-Movement Interval}'; 'Synchronization Accuracy (°)'; 'Synchronization Consistency (logit)'}; %'Inter-Movement Interval (ms)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence'; ; 'Stability Index (Hz)'
 
 for iSession = 1%:length(Sessions)
     iFig = 1;
 
-    for iX = 1:length(varX)
+    for iX = length(varX)
         xLabel = (xLabels{iX});
 
         for iY = 1:length(varY)

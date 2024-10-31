@@ -3,9 +3,16 @@ close all;
 clc;
 
 % Declare paths
-pathProject = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/';
-addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
-addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
+[ret, Computer] = system('hostname');
+if strcmpi({Computer(end-5:end-1)}, 'BRAMS')
+    pathProject = 'C:\Users\p1208638\OneDrive - Universite de Montreal\Projets\projetDT\';
+        addpath('C:\Users\p1208638\OneDrive - Universite de Montreal\Documents\MATLAB\Toolbox\eeglab2021.1\eeglab2021.1\')  % EEGLab
+
+else
+    pathProject = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/';
+    addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
+    addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
+end
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
 Sessions     = {'01'}; %; '02'; '03'
