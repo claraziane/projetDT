@@ -6,17 +6,17 @@ clc;
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
 Sessions     = {'01'; '02'; '03'};
 
 Conditions   = {'stimTap'; 'stimWalk';...
                 'syncTap'; 'syncWalk'};
 
 varX = {'Flexibility'; 'Inhibition'; 'workingMemory'}; %'stabilityIndex'; ;  'BTI'
-varY = {'imiCV'; 'phaseAngleMean'; 'resultantLength';'stabilityIndex'}; %'imiMean';  'power'; 'phaseR'; 
+varY = {'imiCV'; 'phaseAngleMean'; 'resultantLength';}; %'imiMean';  'power'; 'phaseR'; 'stabilityIndex'
 
 xLabels = {'Flexibility'; 'Inhibition'; 'Working Memory';}; % 'Stability Index (Hz)';  'Beat Tracking Index'
-yLabels = { 'Coefficient of Variation_{Inter-Movement Interval}'; 'Synchronization Accuracy (°)'; 'Synchronization Consistency (logit)'; 'Stability Index (Hz)'}; %'Inter-Movement Interval (ms)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence'; 
+yLabels = { 'Coefficient of Variation_{Inter-Movement Interval}'; 'Synchronization Accuracy (°)'; 'Synchronization Consistency (logit)'}; %'Inter-Movement Interval (ms)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence'; ; 'Stability Index (Hz)'
 
 for iSession = 1%:length(Sessions)
     iFig = 1;
@@ -24,7 +24,7 @@ for iSession = 1%:length(Sessions)
     for iX = 1:length(varX)
         xLabel = (xLabels{iX});
 
-        for iY = length(varY)
+        for iY = 1:length(varY)
             yLabel = (yLabels{iY});
 
             for iCondition = 1:length(Conditions)
@@ -48,6 +48,7 @@ for iSession = 1%:length(Sessions)
                 end
 
             end
+            
             % Plot
             plotCorrel(dataX, dataY, xLabel, yLabel, Conditions, 'Pearson')
             saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/fig_' varY{iY} 'vs' varX{iX} '.png']);

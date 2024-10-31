@@ -27,7 +27,7 @@ for iSession = 1%:length(Sessions)
     for iX = 1%:length(varX)
         xLabel = (xLabels{iX});
 
-        for iY = 1:length(varY)
+        for iY = 1%:length(varY)
             yLabel = (yLabels{iY});
 
             for iCondition = 1:length(Conditions)
@@ -46,7 +46,7 @@ for iSession = 1%:length(Sessions)
             end
             % Plot
             plotCorrel(dataX, dataY, xLabel, yLabel, Conditions, 'Spearman')
-%             saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/fig_' varY{iY} 'vs' varX{iX} '.png']);
+            saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/fig_' varY{iY} 'vs' varX{iX} '.png']);
 
             clear dataX dataY
             iFig = iFig+1;

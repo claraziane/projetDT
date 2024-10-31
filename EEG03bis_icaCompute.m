@@ -14,13 +14,13 @@ if strcmpi({Computer(end-5:end-1)}, 'BRAMS')
     addpath('C:\Users\p1208638\OneDrive - Universite de Montreal\Documents\MATLAB\Toolbox\bemobil-pipeline\bemobil-pipeline\AMICA_processing')
 else
     pathImport = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/';
-    addpath('/Users/claraziane/Documents/Acad�mique/Informatique/MATLAB/eeglab2021.1')  % EEGLab
-    addpath('/Users/claraziane/Documents/Acad�mique/Informatique/bemobil-pipeline');    % Bemobil pipeline
-    addpath('/Users/claraziane/Documents/Acad�mique/Informatique/bemobil-pipeline/EEG_preprocessing')
-    addpath('/Users/claraziane/Documents/Acad�mique/Informatique/bemobil-pipeline/AMICA_processing')
+    addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1')  % EEGLab
+    addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline');    % Bemobil pipeline
+    addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/EEG_preprocessing')
+    addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/AMICA_processing')
 end
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
 Sessions     = {'01'; '02'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...

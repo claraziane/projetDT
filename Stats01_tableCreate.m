@@ -6,11 +6,11 @@ clc;
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/CircStat2012a/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04';'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04';'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
 Sessions     = {'01'; '02'};
 
-effectListen     = {'none'; 'stim'; 'sync'};
-effectMvt        = {'Tap'; 'Walk'}; %'Rest'; 
+effectListen     = { 'stim'; 'sync'}; %'none';
+effectMvt        = { 'Tap'; 'Walk'}; %'Rest';
 effectDifficulty = {'ST'; 'DT'};
 
 %Pre-allocating matrices
@@ -24,9 +24,9 @@ syncConsistency = [];
 stabilityIndex = [];
 
 for iParticipant = 1:length(Participants)
-    load([pathResults Participants{iParticipant} '/01/resultsEEG.mat'])
+%     load([pathResults Participants{iParticipant} '/01/resultsEEG.mat'])
     load([pathResults Participants{iParticipant} '/01/resultsSync.mat'])
-    load([pathResults Participants{iParticipant} '/01/resultsBehav.mat'])
+%     load([pathResults Participants{iParticipant} '/01/resultsBehav.mat'])
 
     for iListen = 1:length(effectListen)
 
@@ -47,10 +47,10 @@ for iParticipant = 1:length(Participants)
                     Mvt        = [Mvt; {effectMvt(iMvt)}];
                     Difficulty = [Difficulty; {effectDifficulty{iDifficulty}}];
 
-                    mvtVariability  = [mvtVariability; resultsBehav.(condition{1,1}).imiCV];
-%                     syncAccuracy    = [syncAccuracy; rad2deg(resultsSync.(condition{1,1}).phaseAngleMean)];
-%                     syncConsistency = [syncConsistency; log(resultsSync.(condition{1,1}).resultantLength ./ (1-resultsSync.(condition{1,1}).resultantLength))];
-                    stabilityIndex  = [stabilityIndex; resultsEEG.(condition{1,1}).stabilityIndex];
+%                     mvtVariability  = [mvtVariability; resultsBehav.(condition{1,1}).imiCV];
+                    syncAccuracy    = [syncAccuracy; rad2deg(resultsSync.(condition{1,1}).phaseAngleMean)];
+                    syncConsistency = [syncConsistency; log(resultsSync.(condition{1,1}).resultantLength ./ (1-resultsSync.(condition{1,1}).resultantLength))];
+%                     stabilityIndex  = [stabilityIndex; resultsEEG.(condition{1,1}).stabilityIndex];
    
                 end
 
@@ -65,7 +65,7 @@ end
 % Convert to table format
 % resultsTable = table(Subject, Listen, Mvt, Difficulty, mvtVariability, stabilityIndex, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'mvtVar', 'stabilityIndex'});
 % resultsTable = table(Subject, Listen, Mvt, Difficulty, mvtVariability, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'mvtVar'});
-% resultsTable = table(Subject, Listen, Mvt, Difficulty, syncAccuracy, syncConsistency, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'syncAccuracy', 'syncConsistency'});
-resultsTable = table(Subject, Listen, Mvt, Difficulty, mvtVariability, stabilityIndex, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'motorVariability', 'stabilityIndex'});
+resultsTable = table(Subject, Listen, Mvt, Difficulty, syncAccuracy, syncConsistency, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'syncAccuracy', 'syncConsistency'});
+% resultsTable = table(Subject, Listen, Mvt, Difficulty, mvtVariability, stabilityIndex, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'motorVariability', 'stabilityIndex'});
 
-writetable(resultsTable, [pathResults '/All/01/statsTable.csv'])
+writetable(resultsTable, [pathResults '/All/01/statsTableSYNC.csv'])

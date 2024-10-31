@@ -7,14 +7,14 @@ pathData     = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMon
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/CircStat2012a/');
 
-Participants = {'P01'; 'P02'; 'P07'; 'P08';'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
+Participants = {'P01'; 'P02'; 'P07'; 'P08';'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
 Sessions     = {'01'; '02'};
 Conditions   = {'stimTapST'; 'stimWalkST';...
                 'stimTapDT'; 'stimWalkDT';...
                 'syncTapST'; 'syncWalkST';...
                 'syncTapDT'; 'syncWalkDT'};
      
-for iParticipant = 8:length(Participants)
+for iParticipant = length(Participants)-1:length(Participants)
 
     for iSession = 1%:length(Sessions)
 

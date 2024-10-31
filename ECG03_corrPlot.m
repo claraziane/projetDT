@@ -8,7 +8,7 @@ addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/CircStat2012a/');
 
 
-Participants = {'P01'; 'P02'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'};
+Participants = {'P01'; 'P02'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
 Sessions     = {'01'; '02'; '03'};
 
 Conditions   = {'stimTapST'; 'stimWalkST'; 'syncTapST'; 'syncWalkST';...
@@ -49,7 +49,7 @@ for iSession = 1%:length(Sessions)
 
             end
             % Plot
-            plotCorrel(dataX, dataY, xLabel, yLabel, Conditions, 'Spearman')
+            plotCorrel(dataX, dataY, xLabel, yLabel, Conditions, 'Pearson')
             saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/fig_' varY{iY} 'vs' varX{iX} '.png']);
 
             clear dataX dataY
