@@ -27,7 +27,7 @@ Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
 sFWHM = 0.5; % FWHM of stim frequency
 
 eeglab;
-for iParticipant = length(Participants)
+for iParticipant = 1:length(Participants)
     disp(Participants{iParticipant})
 
     for iSession = 1%:length(Sessions)
@@ -35,7 +35,7 @@ for iParticipant = length(Participants)
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
 
-        for iCondition = 1:length(Conditions)
+        for iCondition = 4%:length(Conditions)
 
             % Create folder for participant's results if does not exist
             pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/', Conditions{iCondition}, '/');
@@ -227,7 +227,11 @@ for iParticipant = length(Participants)
             compFFT = abs(fft(compTime',fftRes,1) / (length(compTime)-1)).^2;
 
             [M, fIndex] = max(compFFT);
-            freqMax     = round(Hz(fIndex),2);
+            if strcmpi(Conditions{iCondition}, 'noneRestST')
+                freqMax = sFreq;
+            else
+                freqMax = round(Hz(fIndex),2);
+            end
             timeVector  = linspace(1, round(length(compTime(:,~isnan(compTime)))/freqEEG), length(compTime(:,~isnan(compTime))));
 
             figure(5)
@@ -245,9 +249,7 @@ for iParticipant = length(Participants)
             saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
 
             if abs(sFreq-freqMax) > .5
-                if strcmpi(Conditions{iCondition}, 'noneRestST')
-                    freqMax = sFreq;
-                else
+                if strcmpi(Conditions{iCondition}, 'noneRestST') ~= 1
                     freqMax = input('What is the peak frequency ?');
                 end
             end

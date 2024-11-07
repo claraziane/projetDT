@@ -34,9 +34,9 @@ for iParticipant = length(Participants)
         % Load stimuli info
         load([pathData Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC.mat']);
 
-%         if exist([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'], 'file')
-%             load([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'])
-%         end
+        if exist([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'], 'file')
+            load([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'])
+        end
 
         for iCondition = 1:length(Conditions)
            

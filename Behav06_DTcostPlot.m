@@ -16,7 +16,7 @@ varX = {'Flexibility'; 'Inhibition'; 'workingMemory'; 'stabilityIndex'}; %; ;  '
 varY = {'imiCV'; 'phaseAngleMean'; 'resultantLength';}; %'imiMean';  'power'; 'phaseR'; 'stabilityIndex'
 
 xLabels = {'Flexibility'; 'Inhibition'; 'Working Memory';}; % 'Stability Index (Hz)';  'Beat Tracking Index'
-yLabels = { 'Coefficient of Variation_{Inter-Movement Interval}'; 'Synchronization Accuracy (°)'; 'Synchronization Consistency (logit)'}; %'Inter-Movement Interval (ms)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence'; ; 'Stability Index (Hz)'
+yLabels = { 'Coefficient of Variation_{Inter-Movement Interval}'; 'Synchronization Accuracy (ï¿½)'; 'Synchronization Consistency (logit)'}; %'Inter-Movement Interval (ms)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence'; ; 'Stability Index (Hz)'
 
 for iSession = 1%:length(Sessions)
     iFig = 1;

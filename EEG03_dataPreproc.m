@@ -38,7 +38,7 @@ extRoot  = '_events.set';
 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 projectDT_bemobil_config
-for iParticipant = length(Participants)
+for iParticipant = [6] %length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -47,7 +47,7 @@ for iParticipant = length(Participants)
 
         load([pathExport 'chanReject.mat'])
 
-        for iCondition = 1:length(Conditions)
+        for iCondition = 2%1:length(Conditions)
             path2save = [pathImport '03_Preprocessing' filesep  Participants{iParticipant} filesep Sessions{iSession} filesep  Conditions{iCondition}];           
 
             % Load
@@ -74,6 +74,9 @@ for iParticipant = length(Participants)
 
             %% Interpolation of bad channels and average reference
             [ALLEEG, EEG, CURRENTSET] = bemobil_interp_avref(EEG , ALLEEG, CURRENTSET, chans_to_interp, 'preprocessed.set', path2save);
+
+            ALLEEG = []; EEG = [];
+            clear chans_to_interp detected_bad_channels detection_plot_handle plotset rejected_chan_plot_handle
 
         end %Conditions
 
