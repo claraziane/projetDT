@@ -21,7 +21,7 @@ else
     chanStr = '/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1/plugins/dipfit5.4/standard_BESA/standard-10-5-cap385.elp';
 end
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'};
 Sessions     = {'01'; '02'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...

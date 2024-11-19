@@ -26,7 +26,7 @@ else
     addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/zapline-plus-main')
 end
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'};
 Sessions     = {'01'; '02'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -38,7 +38,7 @@ extRoot  = '_events.set';
 
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 projectDT_bemobil_config
-for iParticipant = [6] %length(Participants)
+for iParticipant = length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -47,7 +47,7 @@ for iParticipant = [6] %length(Participants)
 
         load([pathExport 'chanReject.mat'])
 
-        for iCondition = 2%1:length(Conditions)
+        for iCondition = 1:length(Conditions)
             path2save = [pathImport '03_Preprocessing' filesep  Participants{iParticipant} filesep Sessions{iSession} filesep  Conditions{iCondition}];           
 
             % Load

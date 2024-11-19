@@ -7,7 +7,7 @@ pathData    = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMont
 pathResults = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/'); %Functions for figures
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'};
 Sessions     = {'01'; '02'};
 
 Conditions   = {'noneTap'; 'stimTap'; 'syncTap'; 'noneWalk'; 'stimWalk'; 'syncWalk'};
@@ -75,8 +75,8 @@ for iSession = 1%:length(Sessions)
     plotScatter(imiCV, Comparisons, Conditions, 'Coefficient of Variation_{Inter-Movement Interval}');
     plotScatter(imiMean, Comparisons, Conditions, 'Inter-Movement Interval (ms)');
     plotScatter(cadence, Comparisons, Conditions, 'Cadence (movements per minute)');
-    plotScatter(stepLength, Comparisons, Conditions(3:end), 'Step Length (mm)');
-    plotScatter(lengthCV, Comparisons, Conditions(3:end), 'Coefficient of Variation_{stepLength}');
+    plotScatter(stepLength, Comparisons, Conditions(4:end), 'Step Length (mm)');
+    plotScatter(lengthCV, Comparisons, Conditions(4:end), 'Coefficient of Variation_{stepLength}');
 
 
     % Save

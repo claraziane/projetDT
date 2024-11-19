@@ -35,7 +35,7 @@ for iParticipant = 1:length(Participants)
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
 
-        for iCondition = 4%:length(Conditions)
+        for iCondition = 5%:length(Conditions)
 
             % Create folder for participant's results if does not exist
             pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/', Conditions{iCondition}, '/');
