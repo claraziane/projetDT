@@ -26,7 +26,7 @@ for iBeat = 1:length(IBI)
 
     if iBeat <= length(IBI)
 
-        if IBI(iBeat) > mean(IBI) + 100
+        if IBI(iBeat) > mean(IBI) + 50
             warning([' !!! Seems like at least one heart beat is missing around frame ' num2str(heartOnsets(iBeat)) '!!']);
 
             Action = input('Do you want to replace heart beat [1], add heart beat [2], or do nothing [0] ?');
@@ -44,7 +44,7 @@ for iBeat = 1:length(IBI)
                 heartOnsets = round(sort(heartOnsets, 'ascend'));
                 IBI = diff(heartOnsets);
             end
-        elseif IBI(iBeat) < mean(IBI) - 100
+        elseif IBI(iBeat) < mean(IBI) - 50
             warning([' !!! Seems like there are too many heart beats around frame ' num2str(heartOnsets(iBeat)) '!!']);
 
             Action = input('Do you want to replace heart beat [1], remove heart beat [2], or do nothing [0] ?');

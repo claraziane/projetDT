@@ -23,7 +23,7 @@ Extensions    = {'_CV_iti';...
 
 % Import test scores
 % Scores = readtable('/Volumes/p-rwage-indivdiff/baasta-scored/_SUMMARY_scored-pybaasta-0.8.1-newscoring.dev24-modified-TABA/all-scores.csv');
-Scores = readtable('/Users/claraziane/Downloads/all-scores.csv');
+Scores = readtable([pathResults 'All/BAASTA_all-scores.csv']);
 
 for iParticipant = 1:length(Participants)
 

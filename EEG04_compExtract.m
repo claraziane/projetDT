@@ -15,7 +15,7 @@ pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/GED-master/'); %For Gaussian filtering
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'};
 Sessions     = {'01'; '02'; '03'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -27,7 +27,7 @@ Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
 sFWHM = 0.5; % FWHM of stim frequency
 
 eeglab;
-for iParticipant = 1:length(Participants)
+for iParticipant = 5:length(Participants)
     disp(Participants{iParticipant})
 
     for iSession = 1%:length(Sessions)
@@ -35,7 +35,7 @@ for iParticipant = 1:length(Participants)
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
 
-        for iCondition = 5%:length(Conditions)
+        for iCondition = 13%length(Conditions)
 
             % Create folder for participant's results if does not exist
             pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/', Conditions{iCondition}, '/');
@@ -91,19 +91,19 @@ for iParticipant = 1:length(Participants)
             data = double(EEG.data);
             dataTime = size(data,2);
 
-            % Filter above .5 Hz
-            [d,c] = butter(3, .5/(freqEEG/2), 'high') ; % High-pass filter parameters (>0.5 Hz)
-            for iChan = 1:EEG.nbchan
-                data(iChan,:) = filtfilt(d,c,data(iChan,:));
-            end
-            data = double(data);
+%             % Filter above .5 Hz
+%             [d,c] = butter(3, .5/(freqEEG/2), 'high') ; % High-pass filter parameters (>0.5 Hz)
+%             for iChan = 1:EEG.nbchan
+%                 data(iChan,:) = filtfilt(d,c,data(iChan,:));
+%             end
+%             data = double(data);
 
-            % Filter under 40 Hz
-            [b,a] = butter(3, 40/(freqEEG/2), 'low') ; % Low-pass filter parameters (<40 Hz)
-            for iChan = 1:EEG.nbchan
-                data(iChan,:) = filtfilt(b,a,data(iChan,:));
-            end
-            data = double(data);
+%             % Filter under 40 Hz
+%             [b,a] = butter(3, 40/(freqEEG/2), 'low') ; % Low-pass filter parameters (<40 Hz)
+%             for iChan = 1:EEG.nbchan
+%                 data(iChan,:) = filtfilt(b,a,data(iChan,:));
+%             end
+%             data = double(data);
 
             % FFT Parameters
             fftRes   = ceil(freqEEG/.02); % FFT resolution of .02 Hz
@@ -183,7 +183,7 @@ for iParticipant = 1:length(Participants)
             subplot(122); imagesc(rCovariance);
             axis square; set(gca,'clim',clim); xlabel('Channels'), ylabel('Channels'); colorbar
             title('Covariance Matrix R');
-            saveas(figure(3), ['/' pathParticipant 'fig_ssepCovariance.png']);
+%             saveas(figure(3), ['/' pathParticipant 'fig_ssepCovariance.png']);
 
             %% Extract component
 
@@ -212,7 +212,7 @@ for iParticipant = 1:length(Participants)
 
             end
             colormap jet
-            saveas(figure(4), [pathParticipant 'fig_ssepComponents.png']);
+%             saveas(figure(4), [pathParticipant 'fig_ssepComponents.png']);
 
             comp2Keep = 1; %input('Which component should be kept ?'); comp2Keep = 2;
             compMax   = lambdaIndex(comp2Keep);
@@ -246,7 +246,7 @@ for iParticipant = 1:length(Participants)
                 xlabel('Frequency (Hz)', 'FontSize', 14) ; ylabel('Power', 'FontSize', 14);
             legend(['Peak frequency = ' num2str(freqMax)], 'FontSize', 14);
             title('Component FFT', 'FontSize', 14);
-            saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
+%             saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
 
             if abs(sFreq-freqMax) > .5
                 if strcmpi(Conditions{iCondition}, 'noneRestST') ~= 1
@@ -281,9 +281,9 @@ for iParticipant = 1:length(Participants)
             subplot(2,2,[3:4]); plot(Hz,compSNR,'ro-','linew',1,'markersize',5,'markerface','w'); hold on;
             plot(Hz,elecSNR,'ko-','linew',1,'markersize',5,'markerface','w');
             set(gca,'xlim',xlim); xlabel('Frequency (Hz)', 'FontSize', 14), ylabel('SNR', 'FontSize', 14); legend({'Component'; electrode}, 'FontSize', 14); clear xlim
-            saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
+%             saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
 
-            save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_comp.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'eventOnset', 'beatOnset', 'freqEEG');
+%             save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_comp.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'eventOnset', 'beatOnset', 'freqEEG');
 
             clear sCovariance rCovariance W Lambdas comp2plot lambdaIndex lambdaSorted timeVector...
                   rCovDistance rCovMean rCovReject rCovTemp rCovZ sCovDistance sCovMean sCovReject sCovTemp sCovZ...
