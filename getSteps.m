@@ -127,10 +127,10 @@ for iPksFilt = 2:length(pksFilt)
                 break;
             end
         end
-        %         exist kineticRoundIndex
-        %         if ans == 0
-        %             kineticRoundIndex = 2;
-        %         end
+        exist kineticRoundIndex
+        if ans == 0
+            kineticRoundIndex = 1;
+        end
         kineticRound(1:kineticRoundIndex) = [];
         tempFrames(1:kineticRoundIndex)   = [];
         tempKinetic(1:kineticRoundIndex) = [];
@@ -171,43 +171,47 @@ clear pks locs pksFilt locsFilt pksSingle
 
 % Make sure you only have one value per step and that no steps are missing
 stepOnsetDiff = diff(stepOnsets);
-for iStep = 1:length(stepOnsetDiff)-1
-    if stepOnsetDiff(iStep) >  mean(stepOnsetDiff)+ 150
-        warning([' !!! Seems like at least one step is missing around frame ' num2str(stepOnsets(iStep)) '!!' ]);
-        Action = input('Do you want to replace step [1], add step [2], or do nothing [0] ?');
-        if Action == 0
-        elseif Action == 1
-            [stepOnsets(end+1), stepValues(end+1)] = ginput(1);
-            plot(stepOnsets(end), stepValues(end), 'r*')
-            [M, mIndex] = min(abs(stepOnsets(end) - stepOnsets(1:end-1)));
-            stepOnsets(mIndex) = [];
-            stepOnsets = round(sort(stepOnsets, 'ascend'));
-            stepOnsetDiff = diff(stepOnsets);
-        elseif Action == 2
-            [stepOnsets(end+1), stepValues(end+1)] = ginput(1);
-            plot(stepOnsets(end), stepValues(end), 'r*')
-            stepOnsets = round(sort(stepOnsets, 'ascend'));
-            stepOnsetDiff = diff(stepOnsets);
+for iStep = 1:length(stepOnsetDiff)
+    PB = 0;
+
+    if iStep <= length(stepOnsetDiff)
+
+        if stepOnsetDiff(iStep) > mean(stepOnsetDiff) + 150
+            warning([' !!! Seems like at least one step is missing around frame ' num2str(stepOnsets(iStep)) ' !!']);
+            PB = 1;
+        elseif stepOnsetDiff(iStep) < mean(stepOnsetDiff) - 150
+            warning([' !!! Seems like there are too many steps around frame ' num2str(stepOnsets(iStep)) ' !!']);
+            PB = 1;
         end
-    elseif stepOnsetDiff(iStep) < mean(stepOnsetDiff) - 150
-        warning([' !!! Seems like there are too many steps around frame ' num2str(stepOnsets(iStep)) '!!' ]);
-        Action = input('Do you want to replace step [1], remove step [2], or do nothing [0] ?');
-        if Action == 0
-        elseif Action == 1
-            [stepOnsets(end+1), stepValues(end+1)] = ginput(1);
-            plot(stepOnsets(end), stepValues(end), 'r*')
-            [M, mIndex] = min(abs(stepOnsets(end) - stepOnsets(1:end-1)));
-            stepOnsets(mIndex) = [];
-            stepOnsets = round(sort(stepOnsets, 'ascend'));
-            stepOnsetDiff = diff(stepOnsets);
-        elseif Action == 2
-            step2remove = input('Which step do you want to remove (index number)?');
-            stepOnsets(step2remove) = [];
-            stepValues(step2remove) = [];
-            stepOnsetDiff = diff(stepOnsets);
+
+        if PB == 1
+            Action = input('Do you want to replace step [1], add step [2], remove step [3], or do nothing [0] ?');
+            if Action == 0
+            elseif Action == 1
+                [stepOnsets(end+1), stepValues(end+1)] = ginput(1);
+                plot(stepOnsets(end), stepValues(end), 'r*')
+                [M, mIndex] = min(abs(stepOnsets(end) - stepOnsets(1:end-1)));
+                stepOnsets(mIndex) = [];
+                stepOnsets = round(sort(stepOnsets, 'ascend'));
+                stepOnsetDiff = diff(stepOnsets);
+            elseif Action == 2
+                [stepOnsets(end+1), stepValues(end+1)] = ginput(1);
+                plot(stepOnsets(end), stepValues(end), 'r*')
+                stepOnsets = round(sort(stepOnsets, 'ascend'));
+                stepOnsetDiff = diff(stepOnsets);
+            elseif Action == 3
+                step2remove = input('Which heart beat do you want to remove (index number)?');
+                plot(stepOnsets(step2remove), Kinetics(stepOnsets(step2remove)), 'w*')
+                stepOnsets(step2remove) = [];
+                stepValues(step2remove) = [];
+                stepOnsetDiff = diff(stepOnsets);
+            end
 
         end
+
     end
+
 end
+
 
 end
