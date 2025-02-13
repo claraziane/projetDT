@@ -29,7 +29,7 @@ kineticFilt = filtfilt(f,e,Kinetics);
 % plot(kineticFilt)
 
 % Find envelop peaks
-peakThreshold = 40; %40
+peakThreshold = 30; %40
 [pksFilt, locsFilt] = findpeaks(kineticFilt);
 
 % Find first stepOnset and remove peaks before first stepOnset
@@ -191,6 +191,7 @@ for iStep = 1:length(stepOnsetDiff)
                 [stepOnsets(end+1), stepValues(end+1)] = ginput(1);
                 plot(stepOnsets(end), stepValues(end), 'r*')
                 [M, mIndex] = min(abs(stepOnsets(end) - stepOnsets(1:end-1)));
+                plot(stepOnsets(mIndex), Kinetics(stepOnsets(mIndex)), 'w*')
                 stepOnsets(mIndex) = [];
                 stepOnsets = round(sort(stepOnsets, 'ascend'));
                 stepOnsetDiff = diff(stepOnsets);

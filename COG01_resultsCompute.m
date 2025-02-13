@@ -6,10 +6,11 @@ clc;
 pathData    = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/RAW/';
 pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/';
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'};
 Sessions     = {'01'; '02'};
 
-Tests  = {'Flexibility'; 'Inhibition'; 'workingMemory'}; % Agnes' method
+Tests  = {'Flexibility'; 'Inhibition'; 'workingMemory'};
 % Scores = {'FV3_EXT0', 'NaN'; 'GO2_ERT0', 'GO2_MDT0'; 'WM3_ERT0', 'WM3_OMT0'}; % Agnes' method
 Scores = {'FV3_ERR0'; 'FV3_MDN0'; 'GO2_ERR0'; 'GO2_MDN0'; 'WM3_ERR0'; 'WM3_OMI0'};
 

@@ -12,7 +12,7 @@ else
     data     = readtable('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/demographicInfo.xlsx');
 end
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'; 'P21'; 'P22'; 'P23'; 'P24'};
 Sessions     = {'01'};
 Conditions   = {'noneWalkST';
     'stimWalkST'; 'stimWalkDT';...
@@ -20,7 +20,7 @@ Conditions   = {'noneWalkST';
 
 distance = (28.31*2.54)*10;
 
-for iParticipant = 2:length(Participants)
+for iParticipant = length(Participants)-1:length(Participants)
 
     for iSession = 1%:length(Sessions)
 

@@ -2,7 +2,7 @@ clear bemobil_config
 
 %% General Setup
 bemobil_config.study_folder = ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed' filesep]; %(NEEDS to have a filesep at the end, sorry!) 
-bemobil_config.filename_prefix = 'P1';
+bemobil_config.filename_prefix = 'P2';
 
 % foldernames (NEED to have a filesep at the end, sorry!) 
 % see "template_import_xdf2bids.m" and "template_import_bids2set.m" to see how the raw EEGLAB folder is created from data in BIDS

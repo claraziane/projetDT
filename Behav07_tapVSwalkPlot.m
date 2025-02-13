@@ -6,18 +6,20 @@ clc;
 pathData    = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/DATA/Processed/');
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
+addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/CircStat2012a/');
 
-Participants = {'P01'; 'P02'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'};
 Sessions     = {'01'; '02'; '03'};
 
-Conditions   = {'none'; 'stim'; 'stim'; 'sync'; 'sync'};
-Compare      = {'ST'; 'ST'; 'DT'; 'ST'; 'DT'};
+Conditions   = {'none'; 'stim'; 'stim'; 'sync'; 'sync'}; % 'stim'; 'stim'; 'sync'; 'sync'
+Compare      = {'ST'; 'ST'; 'DT'; 'ST'; 'DT'};% {'ST'; 'DT'; 'ST'; 'DT'};
 
-var = {'imiMean'; 'imiCV'; 'cadence'};
+var = {'imiMean'; 'imiCV'; 'cadence'; 'phaseErrorMean'; 'phaseAngleMean'; 'resultantLength'}; %{'imiMean'; 'imiCV'; 'cadence'}; 
 
 xLabels = {'Tap'};
 yLabels = {'Walk'};
-Titles  = {'Silence (ST)'; 'Ignore (ST)'; 'Ignore (DT)'; 'Sync (ST)'; 'Sync (DT)'};
+Titles  = {'Silence (ST)'; 'Ignore (ST)'; 'Ignore (DT)'; 'Sync (ST)'; 'Sync (DT)'}; % 'Ignore (ST)'; 'Ignore (DT)'; 
 TitlesCog = {'Ignore'; 'Sync'};
 
 for iSession = 1%:length(Sessions)
@@ -44,8 +46,20 @@ for iSession = 1%:length(Sessions)
                         dataX(iParticipant,iCondition) = Taps.(condX).(var{iVar});
                         dataY(iParticipant,iCondition) = Steps.(condY).(var{iVar});
 
-                    else
+                    elseif strcmpi(var{iVar}, 'phaseErrorMean') || strcmpi(var{iVar}, 'phaseAngleMean') 
+                        % Load data
+                        load([pathResults Participants{iParticipant}  '/' Sessions{iSession} '/resultsSync.mat']);
 
+                        dataX(iParticipant,iCondition) = rad2deg(resultsSync.(condX).(var{iVar}));
+                        dataY(iParticipant,iCondition) = rad2deg(resultsSync.(condY).(var{iVar}));
+
+                    elseif strcmpi(var{iVar}, 'resultantLength')
+                        % Load data
+                        load([pathResults Participants{iParticipant}  '/' Sessions{iSession} '/resultsSync.mat']);
+                        dataX(iParticipant,iCondition) = log(resultsSync.(condX).(var{iVar}) ./ (1-resultsSync.(condX).(var{iVar})));
+                        dataY(iParticipant,iCondition) = log(resultsSync.(condY).(var{iVar}) ./ (1-resultsSync.(condY).(var{iVar})));
+
+                    else
                         % Load data
                         load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsBehav.mat'])
                                dataX(iParticipant,iCondition) = resultsBehav.(condX).(var{iVar});
@@ -67,7 +81,7 @@ for iSession = 1%:length(Sessions)
             end
             
             % Plot
-            plotCorrel(dataX, dataY, xLabel, yLabel, Titles, 'Spearman')
+            plotCorrel(dataX, dataY, xLabel, yLabel, Titles, 'Pearson')
             saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/fig_' var{iVar} '_tapVSwalk.png']);
 
 %             dataXCog(dataXCog == 0) = [];

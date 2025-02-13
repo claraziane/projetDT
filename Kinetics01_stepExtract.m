@@ -11,7 +11,7 @@ else
 end
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'; 
-                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'};
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'};
 Sessions     = {'01'};
 Conditions   = {'testWalk';
                 'noneWalkST';
@@ -32,7 +32,7 @@ for iParticipant = length(Participants)
             load([pathExport 'dataStep.mat'])
         end
 
-        for iCondition = 1%2:length(Conditions)
+        for iCondition = 2:length(Conditions)
 
             Data  = load([pathImport Conditions{iCondition} '.mat']);
             Freq  = Data.(Conditions{iCondition}).Force(1).Frequency;

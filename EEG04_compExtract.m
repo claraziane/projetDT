@@ -15,19 +15,18 @@ pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/GED-master/'); %For Gaussian filtering
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P29'};
 Sessions     = {'01'; '02'; '03'};
-Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
-                'stimRestST'; 'stimTapST'; 'stimWalkST';...
-                'stimRestDT'; 'stimTapDT'; 'stimWalkDT';...
-                              'syncTapST'; 'syncWalkST';...
-                              'syncTapDT'; 'syncWalkDT'};
+Conditions   = {'noneRestST'; 'stimRestST'; 'stimRestDT';...
+                 'noneTapST';  'stimTapST';  'stimTapDT'; 'syncTapST'; 'syncTapDT';...
+                'noneWalkST'; 'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'};
 
 % Parameters for eigendecomposition
-sFWHM = 0.5; % FWHM of stim frequency
+sFWHM = .5; % FWHM of stim frequency
 
 eeglab;
-for iParticipant = 5:length(Participants)
+for iParticipant = length(Participants)
     disp(Participants{iParticipant})
 
     for iSession = 1%:length(Sessions)
@@ -35,7 +34,14 @@ for iParticipant = 5:length(Participants)
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
 
-        for iCondition = 13%length(Conditions)
+        if ~exist([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'file')
+%             mkdir([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/'])
+            load([pathPreproc '/03_Preprocessing/chans2interp.mat'])
+        else
+            load([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'])
+        end
+
+        for iCondition = 9%1:length(Conditions)
 
             % Create folder for participant's results if does not exist
             pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/', Conditions{iCondition}, '/');
@@ -97,7 +103,7 @@ for iParticipant = 5:length(Participants)
 %                 data(iChan,:) = filtfilt(d,c,data(iChan,:));
 %             end
 %             data = double(data);
-
+% 
 %             % Filter under 40 Hz
 %             [b,a] = butter(3, 40/(freqEEG/2), 'low') ; % Low-pass filter parameters (<40 Hz)
 %             for iChan = 1:EEG.nbchan
@@ -183,7 +189,7 @@ for iParticipant = 5:length(Participants)
             subplot(122); imagesc(rCovariance);
             axis square; set(gca,'clim',clim); xlabel('Channels'), ylabel('Channels'); colorbar
             title('Covariance Matrix R');
-%             saveas(figure(3), ['/' pathParticipant 'fig_ssepCovariance.png']);
+            saveas(figure(3), ['/' pathParticipant 'fig_ssepCovariance.png']);
 
             %% Extract component
 
@@ -204,15 +210,15 @@ for iParticipant = 5:length(Participants)
 
                 % Force Cz to be positive to facilitate across-subject interpretation
                 elecSign = sign(compMaps(elecPos, lambdaIndex(iComp))); % To reverse sign
-                compMaps(:,lambdaIndex(iComp)) = compMaps(:,lambdaIndex(iComp))* elecSign;
+                compMaps(:,lambdaIndex(iComp)) = compMaps(:,lambdaIndex(iComp)) * elecSign; %elecSign
 
                 subplot(2,5,5+i); comp2plot = compMaps(:,lambdaIndex(iComp)); topoplot(comp2plot./max(comp2plot), chanLocs, 'maplimits', [-1 1], 'numcontour',0,'electrodes','on','shading','interp');
-                title(['Component ' num2str(iComp)], 'FontSize', 14)
+                title(['Component ' num2str(iComp)], 'F2ontSize', 14)
                 i = i+1;
 
             end
             colormap jet
-%             saveas(figure(4), [pathParticipant 'fig_ssepComponents.png']);
+            saveas(figure(4), [pathParticipant 'fig_ssepComponents.png']);
 
             comp2Keep = 1; %input('Which component should be kept ?'); comp2Keep = 2;
             compMax   = lambdaIndex(comp2Keep);
@@ -246,7 +252,7 @@ for iParticipant = 5:length(Participants)
                 xlabel('Frequency (Hz)', 'FontSize', 14) ; ylabel('Power', 'FontSize', 14);
             legend(['Peak frequency = ' num2str(freqMax)], 'FontSize', 14);
             title('Component FFT', 'FontSize', 14);
-%             saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
+            saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
 
             if abs(sFreq-freqMax) > .5
                 if strcmpi(Conditions{iCondition}, 'noneRestST') ~= 1
@@ -281,9 +287,10 @@ for iParticipant = 5:length(Participants)
             subplot(2,2,[3:4]); plot(Hz,compSNR,'ro-','linew',1,'markersize',5,'markerface','w'); hold on;
             plot(Hz,elecSNR,'ko-','linew',1,'markersize',5,'markerface','w');
             set(gca,'xlim',xlim); xlabel('Frequency (Hz)', 'FontSize', 14), ylabel('SNR', 'FontSize', 14); legend({'Component'; electrode}, 'FontSize', 14); clear xlim
-%             saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
+            saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
 
-%             save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_comp.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'eventOnset', 'beatOnset', 'freqEEG');
+            save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_comp.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'eventOnset', 'beatOnset', 'freqEEG');
+            save([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'chans2interp');
 
             clear sCovariance rCovariance W Lambdas comp2plot lambdaIndex lambdaSorted timeVector...
                   rCovDistance rCovMean rCovReject rCovTemp rCovZ sCovDistance sCovMean sCovReject sCovTemp sCovZ...

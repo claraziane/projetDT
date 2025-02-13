@@ -5,7 +5,7 @@ clear bemobil_config
 % !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 % foldernames (NEED to have a filesep at the end, sorry!)
 % !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-bemobil_config.filename_prefix = 'P1';
+bemobil_config.filename_prefix = 'P0';
 
 % ------------ IMPORTANT --------------
 % Adapt this data path to the place where you put the example data!

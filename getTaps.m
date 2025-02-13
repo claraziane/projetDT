@@ -23,11 +23,11 @@ tapFilt = filtfilt(f,e,abs(tapData));
 % plot(tapFilt)
 
 % Find envelop peaks
-peakThreshold = .3;
+peakThreshold = 0.5;
 [pksFilt, locsFilt] = findpeaks(tapFilt);
 
-% Find first stepOnset and remove peaks before first stepOnset
-[minPksFilt, minIndexPksFilt] = min(pksFilt(1:3));
+% Find first tap onset and remove peaks before first tap onset
+[minPksFilt, minIndexPksFilt] = min(pksFilt(1:2));
 if minIndexPksFilt > 1
     locsFilt(1:minIndexPksFilt-1) = [];
     pksFilt(1:minIndexPksFilt-1) = [];
@@ -71,7 +71,7 @@ pksFilt(pksFilt < peakThreshold) = [];
 
 % Find peaks corresponding to tap max force
 itiTemp =  min(diff(locsFilt));
-[pks,locs] = findpeaks(tapData, 'MinPeakHeight', peakThreshold, 'MinPeakDistance', itiTemp/3);
+[pks,locs] = findpeaks(tapData, 'MinPeakHeight', 1, 'MinPeakDistance', itiTemp-300);
 % plot(locs, tapData(locs), 'k*')
 
 % Find tap onsets
@@ -144,6 +144,7 @@ for iTap = 1:length(ITI)
                 [tapOnset(end+1), tapValue(end+1)] = ginput(1);
                 plot(tapOnset(end), tapValue(end), 'r*')
                 [M, mIndex] = min(abs(tapOnset(end) - tapOnset(1:end-1)));
+                plot(tapOnset(mIndex), tapData(tapOnset(mIndex)), 'w*')
                 tapOnset(mIndex) = [];
                 tapOnset = round(sort(tapOnset, 'ascend'));
                 ITI = diff(tapOnset);

@@ -6,7 +6,7 @@ clc;
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
 
-Participants = {'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'};
 Sessions     = {'01'; '02'; '03'};
 
 Conditions   = {'stimTap'; ...
@@ -15,10 +15,10 @@ Conditions   = {'stimTap'; ...
                 'syncWalk'};
 
 varX = {'Errors'}; %; 'BTI'
-varY = {'imiCV'; 'stabilityIndex'};
+varY = {'stabilityIndex'}; %'imiCV'; 'stabilityIndex'
 
 xLabels = {'Number of Errors'};
-yLabels = { 'Coefficient of Variation_{Inter-Movement Interval}'; 'Stability Index (Hz)'};
+yLabels = {'Stability Index (Hz)'}; % 'Coefficient of Variation_{Inter-Movement Interval}'; 
  load('/Users/claraziane/Desktop/Errors.mat')               
 
 for iSession = 1%:length(Sessions)

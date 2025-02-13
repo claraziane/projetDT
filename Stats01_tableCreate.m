@@ -11,11 +11,12 @@ else
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/CircStat2012a/');
 end
-Participants = {'P01'; 'P02'; 'P03'; 'P04';'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'}; %; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'
 Sessions     = {'01'; '02'};
 
-effectListen     = { 'none'; 'stim'; 'sync'};
-effectMvt        = { 'Rest'; 'Tap'; 'Walk'}; 
+effectListen     = {  'none'; 'stim'; 'sync'}; % 
+effectMvt        = { 'Rest'; 'Tap'; 'Walk'}; %
 effectDifficulty = {'ST'; 'DT'};
 
 %Pre-allocating matrices
@@ -24,7 +25,9 @@ Listen = [];
 Mvt   = [];
 Difficulty = [];
 mvtVariability = [];
+mvtIMI = [];
 syncAccuracy = [];
+syncError = [];
 syncConsistency = [];
 stabilityIndex = [];
 power = [];
@@ -55,12 +58,14 @@ for iParticipant = 1:length(Participants)
                     Difficulty = [Difficulty; {effectDifficulty{iDifficulty}}];
 
 %                     mvtVariability  = [mvtVariability; resultsBehav.(condition{1,1}).imiCV];
+%                     mvtIMI          = [mvtIMI; resultsBehav.(condition{1,1}).imiMean];
 %                     syncAccuracy    = [syncAccuracy; rad2deg(resultsSync.(condition{1,1}).phaseAngleMean)];
+%                     syncError       = [syncError; rad2deg(resultsSync.(condition{1,1}).phaseErrorMean)];
 %                     syncConsistency = [syncConsistency; log(resultsSync.(condition{1,1}).resultantLength ./ (1-resultsSync.(condition{1,1}).resultantLength))];
                     stabilityIndex  = [stabilityIndex; resultsEEG.(condition{1,1}).stabilityIndex];
                     power  = [power; resultsEEG.(condition{1,1}).power];
                     ITPC  = [ITPC; resultsEEG.(condition{1,1}).phaseR];
-   
+%    
                 end
 
             end
@@ -73,8 +78,8 @@ end
 
 % Convert to table format
 % resultsTable = table(Subject, Listen, Mvt, Difficulty, mvtVariability, stabilityIndex, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'mvtVar', 'stabilityIndex'});
-% resultsTable = table(Subject, Listen, Mvt, Difficulty, mvtVariability, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'mvtVar'});
-% resultsTable = table(Subject, Listen, Mvt, Difficulty, syncAccuracy, syncConsistency, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'syncAccuracy', 'syncConsistency'});
+% resultsTable = table(Subject, Listen, Mvt, Difficulty, mvtVariability, mvtIMI, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'mvtVar', 'IMI'});
+% resultsTable = table(Subject, Listen, Mvt, Difficulty, syncAccuracy, syncError, syncConsistency, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty', 'syncAccuracy', 'syncError', 'syncConsistency'});
 resultsTable = table(Subject, Listen, Mvt, Difficulty, stabilityIndex, power, ITPC, 'VariableNames', {'Participants', 'Modality', 'Movement', 'Dfficulty',  'stabilityIndex', 'Power', 'ITPC'});
 
 writetable(resultsTable, [pathResults '/All/01/statsTableNEURO.csv'])

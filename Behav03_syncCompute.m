@@ -7,14 +7,15 @@ pathData     = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMon
 pathResults  = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/');
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/CircStat2012a/');
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08';'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'};
 Sessions     = {'01'; '02'};
 Conditions   = {'stimTapST'; 'stimWalkST';...
                 'stimTapDT'; 'stimWalkDT';...
                 'syncTapST'; 'syncWalkST';...
                 'syncTapDT'; 'syncWalkDT'};
      
-for iParticipant = length(Participants)
+for iParticipant = length(Participants)-1:length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -98,6 +99,11 @@ for iParticipant = length(Participants)
             % Calculating phase angles (error measure of synchronization based on the phase difference between two oscillators)
             phaseAngle     = [];
             phaseAngle     = 360*(asynchrony(1:end-1)/IOI);
+            
+            phaseError     = [];
+            phaseError     = abs(phaseAngle);
+            phaseErrorRad  = deg2rad(phaseError);
+            phaseErrorMean = circ_mean(phaseErrorRad(phaseErrorRad ~=0), [], 1);
 
             phaseRad       = [];
             phaseRad       = deg2rad(phaseAngle);
@@ -114,6 +120,8 @@ for iParticipant = length(Participants)
             resultsSync.([Conditions{iCondition}]).circularVariance = varianceCircular;
             resultsSync.([Conditions{iCondition}]).pRao = p;
             resultsSync.([Conditions{iCondition}]).phaseAngle = phaseAngle;
+            resultsSync.([Conditions{iCondition}]).phaseError = phaseError;
+            resultsSync.([Conditions{iCondition}]).phaseErrorMean = phaseErrorMean;
             resultsSync.([Conditions{iCondition}]).phaseAngleMean = phaseAngleMean;
             resultsSync.([Conditions{iCondition}]).resultantLength = resultantLength;
 

@@ -26,13 +26,12 @@ else
     addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/zapline-plus-main')
 end
 
-Participants = {'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'}; % 'P04'; 'P03'; 'P07'; 'P08'; 'P09';  ; 'P19'; 'P21'
+Participants = {'P29'}; %'P01'; 'P02'; 'P03';'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'; 'P21'; 'P22'; 'P23'; 'P24'; 'P26'
 Sessions     = {'01'; '02'};
-Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
-                'stimRestST'; 'stimTapST'; 'stimWalkST';...
-                'stimRestDT'; 'stimTapDT'; 'stimWalkDT';...
-                              'syncTapST'; 'syncWalkST';... 
-                              'syncTapDT'; 'syncWalkDT'};
+Conditions   = {'noneRestST'; 'stimRestST'; 'stimRestDT';...
+                 'noneTapST';  'stimTapST';  'stimTapDT'; 'syncTapST'; 'syncTapDT';...
+                'noneWalkST'; 'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'};
+
 
 extRoot  = '_events.set';
 
@@ -46,8 +45,11 @@ for iParticipant = 1:length(Participants)
         pathRoot  = fullfile(pathImport, Participants{iParticipant}, Sessions{iSession}, '/EEG');
 
         load([pathExport 'chanReject.mat'])
+        if exist([pathImport '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'file')
+            load([pathImport '03_Preprocessing/' Participants{iParticipant}, '/', Sessions{iSession}, '/chans2interp.mat']);
+        end
 
-        for iCondition = 12%1:length(Conditions)
+        for iCondition = 1:length(Conditions)
             path2save = [pathImport '03_Preprocessing' filesep  Participants{iParticipant} filesep Sessions{iSession} filesep  Conditions{iCondition}];           
 
             % Load
@@ -59,8 +61,9 @@ for iParticipant = 1:length(Participants)
             [ALLEEG EEG CURRENTSET] = bemobil_process_EEG_basics(ALLEEG, EEG, CURRENTSET,  [], {'ECG' 'x_dir' 'y_dir' 'z_dir'}, [], [], 'preprocessed.set', path2save , [], [], bemobil_config.zaplineConfig);
 
             %% Identify bad channels
+            chan2remove = chans2interp.([Conditions{iCondition}]);
             [chans_to_interp, chan_detected_fraction_threshold, detected_bad_channels, rejected_chan_plot_handle, detection_plot_handle] = ...
-                bemobil_detect_bad_channels(EEG, ALLEEG, CURRENTSET, .7);
+                bemobil_detect_bad_channels(EEG, ALLEEG, CURRENTSET, .7, chan2remove);
 
             if length(chans_to_interp) > EEG.nbchan/5
                 warndlg(['In subject ' Participants{iParticipant} ', ' num2str(length(chans_to_interp)) ' of ' num2str(EEG.nbchan)...

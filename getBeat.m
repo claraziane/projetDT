@@ -32,7 +32,7 @@ envFilt = filtfilt(f,e,abs(audioEnv));
 % plot(envFilt)
 
 % Find envelop peaks
-peakThreshold = 0.015;
+peakThreshold = 0.2;
 [pksFilt, locsFilt] = findpeaks(envFilt); %plot(locsFilt, envFilt(locsFilt), 'r*')
 
 % Only keep one peak per beat
@@ -41,7 +41,7 @@ pksFilt(pksFilt < peakThreshold)  = [];
 pksFilt = envFilt(locsFilt);
 
 % Find peaks corresponding to beat onsets
-minPeak =  -0.01;
+minPeak =  -0.1;
 peakThreshold = 0.01;
 [pks,locs] = findpeaks(audioInv, 'MinPeakHeight', minPeak);
 
@@ -53,7 +53,7 @@ for iPksFilt = 2:length(pksFilt)
     singleIndex = singleIndex+1;
     tempBeat = audioInv(locs(I-nPeaks:I));
     tempFrames = locs(I-nPeaks:I);
-    beatRound = round(tempBeat,3);
+    beatRound = round(tempBeat,1);
 
     % beatRound must be in one column
     if size(beatRound,1) == 1
@@ -125,19 +125,27 @@ beatValue = Audio(beatOnset);
 
 % Make sure no beat is missing
 IOI = diff(beatOnset);
-for iIOI = 1:length(IOI)-1
+for iBeat = 1:length(IOI)
+    PB = 0;
 
-    if iIOI <= length(IOI)
+    if iBeat <= length(IOI)
 
-        if IOI(iIOI) > mean(IOI) + 50
-            warning([' !!! Seems like at least one beat is missing around frame number ' num2str(beatOnset(iIOI)) '!!']);
+        if IOI(iBeat) > mean(IOI) + 50
+            warning([' !!! Seems like at least one beat is missing around frame ' num2str(beatOnset(iBeat)) ' !!']);
+            PB = 1;
+        elseif IOI(iBeat) < mean(IOI) - 50
+            warning([' !!! Seems like there are too many beats around frame ' num2str(beatOnset(iBeat)) ' !!']);
+            PB = 1;
+        end
 
-            Action = input('Do you want to replace beat [1], add beat [2], or do nothing [0] ?');
+        if PB == 1
+            Action = input('Do you want to replace beat [1], add beat [2], remove beat [3], or do nothing [0] ?');
             if Action == 0
             elseif Action == 1
                 [beatOnset(end+1), beatValue(end+1)] = ginput(1);
                 plot(beatOnset(end), beatValue(end), 'r*')
                 [M, mIndex] = min(abs(beatOnset(end) - beatOnset(1:end-1)));
+                plot(beatOnset(mIndex), Audio(beatOnset(mIndex)), 'w*')
                 beatOnset(mIndex) = [];
                 beatOnset = round(sort(beatOnset, 'ascend'));
                 IOI = diff(beatOnset);
@@ -146,28 +154,18 @@ for iIOI = 1:length(IOI)-1
                 plot(beatOnset(end), beatValue(end), 'r*')
                 beatOnset = round(sort(beatOnset, 'ascend'));
                 IOI = diff(beatOnset);
-            end
-
-        elseif IOI(iIOI) < mean(IOI) - 50
-            warning([' !!! Seems like there are too many beats around frame number ' num2str(beatOnset(iIOI)) '!!']);
-
-            Action = input('Do you want to replace beat [1], remove beat [2], or do nothing [0] ?');
-            if Action == 0
-            elseif Action == 1
-                [beatOnset(end+1), beatValue(end+1)] = ginput(1);
-                plot(beatOnset(end), beatValue(end), 'r*')
-                [M, mIndex] = min(abs(beatOnset(end) - beatOnset(1:end-1)));
-                beatOnset(mIndex) = [];
-                beatOnset = round(sort(beatOnset, 'ascend'));
-                IOI = diff(beatOnset);
-            elseif Action == 2
-                beat2remove = input('Which beat do you want to remove (index number)');
+            elseif Action == 3
+                beat2remove = input('Which heart beat do you want to remove (index number)?');
+                plot(beatOnset(beat2remove), Kinetics(beatOnset(beat2remove)), 'w*')
                 beatOnset(beat2remove) = [];
                 beatValue(beat2remove) = [];
                 IOI = diff(beatOnset);
             end
+
         end
+
     end
+
 end
 
 warning('Check last beat has been identified for beat categorization !!')
