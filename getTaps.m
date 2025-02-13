@@ -23,7 +23,7 @@ tapFilt = filtfilt(f,e,abs(tapData));
 % plot(tapFilt)
 
 % Find envelop peaks
-peakThreshold = 0.5;
+peakThreshold = 0.3;
 [pksFilt, locsFilt] = findpeaks(tapFilt);
 
 % Find first tap onset and remove peaks before first tap onset

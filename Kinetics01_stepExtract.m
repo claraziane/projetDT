@@ -18,7 +18,7 @@ Conditions   = {'testWalk';
                 'stimWalkST'; 'stimWalkDT';...
                 'syncWalkST'; 'syncWalkDT'};
             
-for iParticipant = length(Participants)
+for iParticipant = 27%1:length(Participants)
 
     for iSession = 1%:length(Sessions)
 

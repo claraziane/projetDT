@@ -18,7 +18,7 @@ Conditions   = {'testTap';
                 'stimTapST'; 'stimTapDT';...
                 'syncTapST'; 'syncTapDT'};
             
-for iParticipant = length(Participants)
+for iParticipant = 1:length(Participants)
 
     for iSession = 1
 
