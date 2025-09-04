@@ -1,4 +1,4 @@
-function [heartOnsets, heartRate, BPM,  IBI, ibiMean, ibiCV] = getHeart(heartData, sampFreq)
+function [heartOnsets, heartRate, BPM,  IBI, ibiMean, ibiCV] = getHeartInNoise(heartData, sampFreq)
 
 warning('on')
 
@@ -9,10 +9,33 @@ for iInterval = 1:2000:length(heartData)
 end
 figure; plot(heartData); title('ECG'); hold on;
 
+heartOnsets = [];
+heartValues = [];
+
+for i = 1:2
+    [heartOnsets(end+1), heartValues(end+1)] = ginput(1);
+    plot(heartOnsets(end), heartValues(end), 'r*')
+end
+IBI = mean(diff(heartOnsets));
+
 % Find envelop peaks
-peakThreshold = 200;
-[heartValues,heartOnsets] = findpeaks(heartData, 'MinPeakHeight', peakThreshold, 'MinPeakDistance', 150);
-plot(heartOnsets, heartValues, 'r*');
+% peakThreshold = -400;
+[pks,locs] = findpeaks(heartData);
+% plot(locs, pks, 'k*');
+
+nBeats = length([heartOnsets(end):IBI:length(heartData)]);
+for iBeat = 2:nBeats-1
+    heartOnsetTemp = round(heartOnsets(end)+IBI);
+    [~, beatIndex] = min(abs(heartOnsetTemp-locs));
+    [~, maxIndex]  = max(pks(beatIndex-2:beatIndex+2));
+    beatIndex = beatIndex + (maxIndex-3);
+    if beatIndex > length(locs)
+        beatIndex = beatIndex -1;
+    end
+    heartOnsets(end+1) = locs(beatIndex);
+end
+heartOnsets = round(heartOnsets);
+plot(heartOnsets(3:end), heartData(heartOnsets(3:end)), 'r*');
 
 % Remove repeating heart beat onsets
 heartOnsets = unique(heartOnsets,'rows');
@@ -77,5 +100,5 @@ ibiStd = std(IBI);
 ibiCV = ibiStd/ibiMean;
 
 close;
- 
+
 end

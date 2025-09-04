@@ -20,7 +20,7 @@ else
     addpath('/Users/claraziane/Documents/Académique/Informatique/bemobil-pipeline/AMICA_processing')
 end
 
-Participants = {'P2'}; %'P01'; 'P02'; 'P03';'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'; 'P21'; 'P22'; 'P23'; 'P24'; 'P26'
+Participants = {'P45'}; %'P28'; 'P29'; 'P30'; 'P31'; 'P01'; 'P02'; 'P03';'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'; 'P21'; 'P22'; 'P23'; 'P24'; 'P26'
 Sessions     = {'01'; '02'};
 Conditions   = {'noneRestST'; 'stimRestST'; 'stimRestDT';...
                  'noneTapST';  'stimTapST';  'stimTapDT'; 'syncTapST'; 'syncTapDT';...
@@ -37,7 +37,7 @@ for iParticipant = 1:length(Participants)
         pathExport = [pathImport 'All/' Sessions{iSession} '/'];
         load([pathExport 'icReject.mat'])
 
-        for iCondition = 9%1:length(Conditions)
+        for iCondition = 1:length(Conditions)
            
             condStr = Conditions{iCondition};
             pathRoot  = fullfile(pathImport, '03_Preprocessing', Participants{iParticipant}, Sessions{iSession},Conditions{iCondition});

@@ -1,0 +1,146 @@
+clear;
+close all;
+clc;
+
+% Declare paths
+[ret, Computer] = system('hostname');
+if strcmpi({Computer(end-5:end-1)}, 'BRAMS')
+    pathProject = 'C:\Users\p1208638\OneDrive - Universite de Montreal\Projets\projetDT\';
+    addpath('C:\Users\p1208638\OneDrive - Universite de Montreal\Documents\MATLAB\Toolbox\eeglab2021.1\eeglab2021.1\')  % EEGLab
+
+else
+    pathProject = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/';
+    addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/');
+    addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/eeglab2021.1'); %EEGLab
+end
+
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
+                'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
+Sessions     = {'01'; '02'; '03'};
+Conditions   = {'stimTap';  'syncTap';...
+                'stimWalk'; 'syncWalk'}; %'stimRest';...
+Comparisons  = {'ST'; 'DT'};
+
+% Preallocate matrix
+% compTopo       = nan(64, length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
+% Power          = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
+% phaseMean      = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
+% phaseCI        = nan(length(Participants), 2, length(Conditions)*length(Comparisons),length(Sessions));
+% ITPC           = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
+% stabilityIndex = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
+
+eeglab;
+for iSession = 1%:length(Sessions)
+    iPlot = 1;
+    iTopo = 17;
+    iCond = 1;
+
+    for iCondition = 1:length(Conditions)
+
+        for iParticipant = 1:length(Participants)
+
+            pathPreproc = [pathProject 'DATA/Processed/' Participants{iParticipant} '/' Sessions{iSession} '/EEG/'];
+            pathResults = [pathProject 'Results/' Participants{iParticipant} '/' Sessions{iSession} '/RESS/'];
+            load([pathResults 'resultsEEG.mat']);
+
+            for iCompare = 1:length(Comparisons)
+                condName = [Conditions{iCondition} Comparisons{iCompare}];
+
+                if  strcmpi(Conditions{iCondition}(1:4), 'none') == 1 && strcmpi(Comparisons{iCompare}, 'DT') == 1 %There is no DT condition in the none conditions
+                else
+
+                    load([pathPreproc condName '_compRESS.mat'], 'comp2plot', 'chanLocs');
+
+                    % Topoplots
+                    compTopo(:, iParticipant, iPlot+iCompare-1, iSession) = comp2plot;
+
+%                     figure(iPlot+iCompare-1+1);
+%                     subplot(4,10, iParticipant);...
+%                         topoplot(comp2plot./max(comp2plot), chanLocs, 'maplimits', [-1 1], 'numcontour', 0, 'conv', 'off', 'electrodes', 'off', 'shading', 'interp'); hold on;
+%                     title(Participants{iParticipant})
+%                     sgtitle(condName, 'FontSize', 24, 'FontWeight', 'bold')
+                    if strcmpi(resultsEEG.(condName).compKeep, 'N')
+                        Power(iParticipant, iPlot+iCompare-1, iSession) = NaN;
+                        phaseMean(iParticipant, iPlot+iCompare-1, iSession) = NaN;
+                        phaseCI(iParticipant, :, iPlot+iCompare-1, iSession) = NaN;
+                         ITPC(iParticipant, iPlot+iCompare-1, iSession) = NaN;
+                         stabilityIndex(iParticipant, iPlot+iCompare-1, iSession) = NaN;
+
+                    else
+                        % Power
+                        Power(iParticipant, iPlot+iCompare-1, iSession) = resultsEEG.(condName).power;
+
+                        % Phase
+                        Phase = [];
+                        Phase = resultsEEG.(condName).phase;
+                        phaseMean(iParticipant, iPlot+iCompare-1, iSession) = resultsEEG.(condName).phaseMean;
+                        SEM = resultsEEG.(condName).phaseStd / sqrt(length(Phase));
+                        t = tinv([0.025 0.975], length(Phase)-1);
+                        phaseCI(iParticipant, :, iPlot+iCompare-1, iSession) = resultsEEG.(condName).phaseMean + t * SEM;
+
+                        % ITPC
+                        ITPC(iParticipant, iPlot+iCompare-1, iSession) = resultsEEG.(condName).phaseR;
+    
+                        % Stability Index
+                        stabilityIndex(iParticipant, iPlot+iCompare-1, iSession) = resultsEEG.(condName).stabilityIndex;
+                    end
+
+                end
+
+            end % end Comparisons
+
+            if iParticipant == length(Participants)
+                iPlot = iPlot + 2;
+            end
+
+        end % end Participants
+
+        % Plot average topo per condition
+        iCompare = 1;
+        for iTopo = iTopo+1:iTopo+2
+
+            if strcmpi(Conditions{iCondition}(1:4), 'none') == 1 && strcmpi(Comparisons{iCompare}, 'DT') == 1 %There is no DT condition in the none conditions
+            else
+                topoMean = mean(squeeze(compTopo(:,:,iCond,iSession)),2);
+
+%                 figure(iTopo);
+%                 topoplot(topoMean./max(topoMean), chanLocs, 'maplimits', [-1 1], 'numcontour', 0, 'conv', 'off', 'electrodes', 'off', 'shading', 'interp'); hold on;
+%                 title([strcat(Conditions{iCondition}, Comparisons{iCompare})], 'FontSize', 24, 'FontWeight', 'bold')
+%                 saveas(figure(iTopo), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topoMean_' strcat(Conditions{iCondition}, Comparisons{iCompare}) '.png'])
+            end
+            iCond = iCond +1;
+            iCompare = iCompare + 1;
+
+        end
+
+
+    end % end Conditions
+
+    %% Plot
+    plotScatter(Power, Comparisons, Conditions, 'Power (SNR)');
+    plotScatterCI(phaseMean, phaseCI, Comparisons, Conditions, 'Phase (rad)');
+    plotScatter(ITPC, Comparisons, Conditions, 'Inter-trial Phase Coherence');
+    plotScatter(stabilityIndex, Comparisons, Conditions, 'Stability Index (Hz)');
+
+    %% Save
+    saveas(figure(2), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{1} Comparisons{1} '.png'])
+    saveas(figure(3), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{1} Comparisons{2} '.png'])
+    saveas(figure(4), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{2} Comparisons{1} '.png'])
+    saveas(figure(5), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{2} Comparisons{2} '.png'])
+    
+    saveas(figure(6), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{3} Comparisons{1} '.png'])
+    saveas(figure(7), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{3} Comparisons{2} '.png'])    
+    saveas(figure(8), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{4} Comparisons{1} '.png'])
+    saveas(figure(9), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{4} Comparisons{2} '.png']) 
+%     saveas(figure(10), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{5} Comparisons{1} '.png'])
+%     saveas(figure(11), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/topo_' Conditions{5} Comparisons{2} '.png'])
+    
+    saveas(figure(10), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/figClean_eegPower.png'])
+    saveas(figure(11), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/figClean_eegPhase.png'])
+    saveas(figure(12), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/figClean_eegITPC.png'])
+    saveas(figure(13), [pathProject 'Results/All/' Sessions{iSession} '/EEG/RESS/figClean_eegStabilityIndex.png'])
+
+    close all;
+
+end % end Sessions

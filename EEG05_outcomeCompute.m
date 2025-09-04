@@ -16,13 +16,14 @@ pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 addpath('/Users/claraziane/Documents/Académique/Informatique/tweetCodes/'); %Custom FIR check function
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/CircStat2012a/'); %For computing phase consistency
 
-Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'; 'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'};
+Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'};
 Sessions     = {'01'; '02'; '03'};
 Conditions   = {'noneRestST'; 'stimRestST'; 'stimRestDT';...
                  'noneTapST';  'stimTapST';  'stimTapDT'; 'syncTapST'; 'syncTapDT';...
                 'noneWalkST'; 'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'};
 
-for iParticipant = 1:length(Participants)
+for iParticipant = length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -32,9 +33,9 @@ for iParticipant = 1:length(Participants)
         % Load stimuli info
         load([pathData Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC.mat']);
 
-%         if exist([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'], 'file')
-%             load([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'])
-%         end
+        if exist([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'], 'file')
+            load([pathResults Participants{iParticipant} '/'  Sessions{iSession} '/resultsEEG.mat'])
+        end
 
         for iCondition = 1:length(Conditions)
            
@@ -161,4 +162,3 @@ for iParticipant = 1:length(Participants)
     end
 
 end
-

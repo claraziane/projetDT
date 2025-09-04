@@ -8,10 +8,11 @@ pathResults = ('/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMont
 addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/'); %Functions for figures
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
-                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'};
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
+                'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'; '02'};
 
-Conditions   = {'noneTap'; 'stimTap'; 'syncTap'; 'noneWalk'; 'stimWalk'; 'syncWalk'};
+Conditions   = {'stimTap'; 'syncTap'; 'stimWalk'; 'syncWalk'}; % 'noneTap'; 'noneWalk'; 
 Comparisons  = {'ST'; 'DT'};
 
 for iSession = 1%:length(Sessions)
@@ -81,10 +82,10 @@ for iSession = 1%:length(Sessions)
 
 
     % Save
-    saveas(figure(1), [pathResults '/All/' Sessions{iSession} '/fig_mvtCV.png'])
-    saveas(figure(2), [pathResults '/All/' Sessions{iSession} '/fig_mvtIMI.png'])
-    saveas(figure(3), [pathResults '/All/' Sessions{iSession} '/fig_mvtCadence.png'])
-%     saveas(figure(4), [pathResults '/All/' Sessions{iSession} '/fig_mvLength.png'])
+    saveas(figure(1), [pathResults '/All/' Sessions{iSession} '/Motor/fig_mvtCV.png'])
+    saveas(figure(2), [pathResults '/All/' Sessions{iSession} '/Motor/fig_mvtIMI.png'])
+    saveas(figure(3), [pathResults '/All/' Sessions{iSession} '/Motor/fig_mvtCadence.png'])
+%     saveas(figure(4), [pathResults '/All/' Sessions{iSession} '/Motor/fig_mvLength.png'])
     close all;
 
 end % End Sessions

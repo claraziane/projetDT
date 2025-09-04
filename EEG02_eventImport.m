@@ -21,7 +21,8 @@ else
 end
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
-                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'};
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
+                'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'; '02'};
 Conditions   = {'noneRestST'; 'noneTapST'; 'noneWalkST';...
                 'stimRestST'; 'stimTapST'; 'stimWalkST';...
@@ -58,7 +59,7 @@ for iParticipant = length(Participants)
         load([pathData Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataTap.mat'])
         load([pathData Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataStep.mat'])
 
-        for iCondition = 1:length(Conditions)
+        for iCondition =  1:length(Conditions)
 
             fileRead  = [Conditions{iCondition} extRoot];
             fileWrite = [Conditions{iCondition} extFinal];
@@ -171,7 +172,7 @@ for iParticipant = length(Participants)
 
             % Extract heart beat onsets
             sampFreq = EEG.srate;
-            [heartOnsets, heartRate, BPM,  IBI, ibiMean, ibiCV] = getHeart(heartData, sampFreq);
+            [heartOnsets, heartRate, BPM,  IBI, ibiMean, ibiCV] = getHeart(heartData, sampFreq); %getHeartInNoise
 
             % Store data in structure
             resultsECG.([Conditions{iCondition}]).heartOnsets(:,1) = heartOnsets; % Store heart onsets in structure
@@ -181,7 +182,15 @@ for iParticipant = length(Participants)
             resultsECG.([Conditions{iCondition}]).ibiMean(:,1)     = ibiMean;     % Storeinter-beat interval mean in structure
             resultsECG.([Conditions{iCondition}]).ibiCV(:,1)       = ibiCV;       % Store inter-beat interval coefficient of varation in structure          
             resultsECG.([Conditions{iCondition}]).sampFreq         = sampFreq;    % Store ECG data sampling frequency in structure          
-                    
+           
+%             resultsECG.([Conditions{iCondition}]).heartOnsets(:,1) = NaN; % Store heart onsets in structure
+%             resultsECG.([Conditions{iCondition}]).heartRate(1,1)   = NaN;   % Store heart frequency in structure
+%             resultsECG.([Conditions{iCondition}]).BPM              = NaN;         % Store number of heart beats per minute in structure
+%             resultsECG.([Conditions{iCondition}]).IBI(:,1)         = NaN;         % Store inter-beat interval in structure
+%             resultsECG.([Conditions{iCondition}]).ibiMean(:,1)     = NaN;     % Storeinter-beat interval mean in structure
+%             resultsECG.([Conditions{iCondition}]).ibiCV(:,1)       = NaN;       % Store inter-beat interval coefficient of varation in structure          
+%             resultsECG.([Conditions{iCondition}]).sampFreq         = sampFreq;    % Store ECG data sampling frequency in structure          
+%                    
             % Save structure
             save([pathExport 'resultsECG.mat'], 'resultsECG');
 

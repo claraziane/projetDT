@@ -9,36 +9,28 @@ addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/'); %Fu
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
                 'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
                 'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
-Sessions     = {'01'; '02'};
 
 Conditions   = { 'stimTap_DT'; 'syncTap_DT'; 'stimWalk_DT'; 'syncWalk_DT'}; %'stimRest_DT';
 xLabels      = {    'stimTap';    'syncTap';    'stimWalk';    'syncWalk'}; %'stimRest';   
 Comparisons = {'DT'};
 
-for iSession = 1%:length(Sessions)
-    iPlot = 1;
+iPlot = 1;
 
-    % Preallocate matrix
-    Errors   = nan(length(Participants),length(Conditions));
+% Preallocate matrix
+Cost   = nan(length(Participants),2);
 
-    for iCondition = 1:length(Conditions)
+for iParticipant = 1:length(Participants)
 
-        for iParticipant = 1:length(Participants)
-
-            pathImport = [pathResults Participants{iParticipant} '/' Sessions{iSession} '/'];
-            load([pathImport 'resultsOddball.mat']);
-
-            Errors(iParticipant, iCondition) = resultsOddball.(Conditions{iCondition});
-               
-        end % End Participants
-
-    end % End Conditions
+    pathImport = [pathResults Participants{iParticipant} '/01/'];
+    load([pathImport 'resultsOddball.mat']);
     
-    % Plot
-    plotScatter(Errors, Comparisons, xLabels, 'Number of Errors');
-   
-    % Save
-    saveas(figure(1), [pathResults '/All/' Sessions{iSession} '/Cognition/fig_cogOddball.png'])
-    close all;
+    Cost(iParticipant,1) = resultsOddball.stimRest_DT - resultsOddball.syncWalk_DT;
+    
+end % End Participants
+clusters = kmeans(resultsOddball.costDT(:,1), 2);
 
-end % End Sessions
+% Plot
+plotScatter(Cost, Comparisons, xLabels, 'Dual-Task Cost');
+saveas(figure(1), [pathResults '/All/01/Cognition/fig_oddDTCost.png'])
+
+close all;

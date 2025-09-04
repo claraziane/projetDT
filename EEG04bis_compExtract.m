@@ -17,14 +17,14 @@ addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/GED-master
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
                 'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
-                'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'};
+                'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'; '02'; '03'};
-Conditions   = {'noneRestST'; 'stimRestST'; 'stimRestDT';...
-                 'noneTapST';  'stimTapST';  'stimTapDT'; 'syncTapST'; 'syncTapDT';...
-                'noneWalkST'; 'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'};
+Conditions   = {'stimRestST'; 'stimRestDT';...
+                 'stimTapST';  'stimTapDT';  'syncTapST'; 'syncTapDT';...
+                'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'};
 
 % Parameters for eigendecomposition
-sFWHM = .5; % FWHM of stim frequency
+sFWHM = .3; % FWHM of stim frequency
 
 eeglab;
 for iParticipant = length(Participants)
@@ -41,10 +41,10 @@ for iParticipant = length(Participants)
             load([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'])
         end
 
-        for iCondition = 1:length(Conditions)
+        for iCondition = 9:length(Conditions)
 
             % Create folder for participant's results if does not exist
-            pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/', Conditions{iCondition}, '/');
+            pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/RESS/', Conditions{iCondition}, '/');
             if ~exist(pathParticipant, 'dir')
                 mkdir(pathParticipant)
             end
@@ -64,34 +64,30 @@ for iParticipant = length(Participants)
             [~, elecPos] = max(elecPos);
 
             % Extract mvt and beat onsets                   
-            Event = [];
-            if strcmpi(Conditions{iCondition}(5:7), 'Tap') == 1
-                Event = 'Tap';
-            elseif strcmpi(Conditions{iCondition}(5:8), 'Walk') == 1
-                Event = 'Step';
-            elseif strcmpi(Conditions{iCondition}(5:8), 'Rest') == 1
-                 Event = 'RAC';
-            end         
-                    
-            eventLoc = [];
-            eventOnset = [];
-            if strcmpi(Conditions{iCondition}, 'noneRestST') == 1 %Special case because no events in that condition
-                eventOnset = round(RAC.stimRestST.beatOnset * (freqEEG/RAC.stimRestST.sampFreq));
-            else    
-                eventLoc   = find(strcmp({EEG.event.type}, Event));
-                eventOnset = [EEG.event(eventLoc).latency];
-            end
+%             Event = [];
+%             if strcmpi(Conditions{iCondition}(5:7), 'Tap') == 1
+%                 Event = 'Tap';
+%             elseif strcmpi(Conditions{iCondition}(5:8), 'Walk') == 1
+%                 Event = 'Step';
+%             elseif strcmpi(Conditions{iCondition}(5:8), 'Rest') == 1
+%                  Event = 'RAC';
+%             end         
+%                     
+%             eventLoc = [];
+%             eventLoc   = find(strcmp({EEG.event.type}, Event));
+% 
+%             eventOnset = [];
+%             eventOnset = [EEG.event(eventLoc).latency];
 
             beatLoc   = [];
+            beatLoc   = find(strcmp({EEG.event.type}, 'RAC'));
+            
             beatOnset = [];
-            if strcmpi(Conditions{iCondition}(end-1:end), 'DT') == 1
-                beatLoc   = find(strcmp({EEG.event.type}, 'RAC'));
-                beatOnset = [EEG.event(beatLoc).latency];
-            end
+            beatOnset = [EEG.event(beatLoc).latency];
 
             % Compute S freq
-            nEvents   = length(eventOnset);
-            sFreq = round(nEvents / ((eventOnset(end) - eventOnset(1))/freqEEG),2);
+            nBeats = length(beatOnset);
+            sFreq  = round(nBeats / ((beatOnset(end) - beatOnset(1))/freqEEG),2);
 
             data = [];
             data = double(EEG.data);
@@ -112,7 +108,7 @@ for iParticipant = length(Participants)
 %             data = double(data);
 
             % FFT Parameters
-            fftRes   = ceil(freqEEG/.01); % FFT resolution of .02 Hz
+            fftRes   = ceil(freqEEG/.02); % FFT resolution of .02 Hz
             Hz       = linspace(0, freqEEG, fftRes);
 
             %% Compute covariance matrices
@@ -124,33 +120,33 @@ for iParticipant = length(Participants)
             sData = [];
             sData = filterFGx(data,freqEEG,sFreq,sFWHM);
 
-            nMvt = 1;
-            for iMvt = 1:length(eventOnset)-1
-                if eventOnset(iMvt)-100 >= 1 && eventOnset(iMvt)+500 <= dataTime
-                    sTemp = sData(:,eventOnset(iMvt)-100:eventOnset(iMvt)+500);
+            nBeat = 1;
+            for iBeat = 1:length(beatOnset)-1
+                if beatOnset(iBeat)-100 >= 1 && beatOnset(iBeat)+500 <= dataTime
+                    sTemp = sData(:,beatOnset(iBeat)-100:beatOnset(iBeat)+500);
                     sTemp = bsxfun(@minus,sTemp,mean(sTemp,2));
-                    sCovariance(:,:,nMvt) = (sTemp*sTemp')/(size(sTemp,2)-1);
+                    sCovariance(:,:,nBeat) = (sTemp*sTemp')/(size(sTemp,2)-1);
 
-                    rTemp = data(:,eventOnset(iMvt)-100:eventOnset(iMvt)+500);
+                    rTemp = data(:,beatOnset(iBeat)-100:beatOnset(iBeat)+500);
                     rTemp = bsxfun(@minus,rTemp,mean(rTemp,2));
-                    rCovariance(:,:,nMvt) = (rTemp*rTemp')/(size(rTemp,2)-1);
+                    rCovariance(:,:,nBeat) = (rTemp*rTemp')/(size(rTemp,2)-1);
 
-                    nMvt = nMvt+1;
+                    nBeat = nBeat+1;
                 end
             end
             sCovMean = mean(sCovariance,3);
             rCovMean = mean(rCovariance,3);
 
             % Compute Euclidean distance
-            sCovDistance = zeros(nMvt-1,1);
-            rCovDistance = zeros(nMvt-1,1);
+            sCovDistance = zeros(nBeat-1,1);
+            rCovDistance = zeros(nBeat-1,1);
 
-            for iMvt = 1:nMvt-1
-                sCovTemp = squeeze(sCovariance(:,:,iMvt));
-                sCovDistance(iMvt) = sqrt(sum((sCovTemp(:) - sCovMean(:)).^2));
+            for iBeat = 1:nBeat-1
+                sCovTemp = squeeze(sCovariance(:,:,iBeat));
+                sCovDistance(iBeat) = sqrt(sum((sCovTemp(:) - sCovMean(:)).^2));
      
-                rCovTemp = squeeze(rCovariance(:,:,iMvt));
-                rCovDistance(iMvt) = sqrt(sum((rCovTemp(:) - rCovMean(:)).^2));
+                rCovTemp = squeeze(rCovariance(:,:,iBeat));
+                rCovDistance(iBeat) = sqrt(sum((rCovTemp(:) - rCovMean(:)).^2));
             end
 
             % Convert distance to Z scores
@@ -189,7 +185,7 @@ for iParticipant = length(Participants)
             subplot(122); imagesc(rCovariance);
             axis square; set(gca,'clim',clim); xlabel('Channels'), ylabel('Channels'); colorbar
             title('Covariance Matrix R');
-%             saveas(figure(3), ['/' pathParticipant 'fig_ssepCovariance.png']);
+            saveas(figure(3), ['/' pathParticipant 'fig_ssepCovariance.png']);
 
             %% Extract component
 
@@ -199,11 +195,11 @@ for iParticipant = length(Participants)
 
             W = bsxfun(@rdivide, W, sqrt(sum(W.^2,1))); % Normalize vectors
             compMaps = sCovariance * W / (W' * sCovariance * W); % Extract components
-            
+                             
             % Plot first 5 components
             i = 1;
             figure(4), clf
-            subplot(211); plot(lambdaSorted,'ks-','markersize',10,'markerfacecolor','w');
+            subplot(311); plot(lambdaSorted,'ks-','markersize',10,'markerfacecolor','w');
             xlabel('Component', 'FontSize', 14); ylabel('\lambda', 'FontSize', 14);
             title('Eigen Values', 'FontSize', 14);
             for iComp = 1:5
@@ -212,33 +208,44 @@ for iParticipant = length(Participants)
                 elecSign = sign(compMaps(elecPos, lambdaIndex(iComp))); % To reverse sign
                 compMaps(:,lambdaIndex(iComp)) = compMaps(:,lambdaIndex(iComp)) * elecSign; %elecSign
 
-                subplot(2,5,5+i); comp2plot = compMaps(:,lambdaIndex(iComp)); topoplot(comp2plot./max(comp2plot), chanLocs, 'maplimits', [-1 1], 'numcontour',0,'electrodes','on','shading','interp');
+                % Plot comp topography
+                subplot(3,5,5+i); comp2plot = compMaps(:,lambdaIndex(iComp)); topoplot(comp2plot./max(comp2plot), chanLocs, 'maplimits', [-1 1], 'numcontour',0,'electrodes','on','shading','interp');
+
+                 % Plot comp FFT
+                tempTime = [];
+                tempTime = W(:,lambdaIndex(iComp))' * data;
+
+                tempFFT = [];
+                tempFFT = abs(fft(tempTime',fftRes,1) / (length(tempTime)-1)).^2;
+               
+                subplot(3,5,10+i); plot(Hz,tempFFT);
+                xlim = [0 25]; set(gca,'xlim',xlim);...
+                xlabel('Frequency (Hz)', 'FontSize', 14) ; ylabel('Power', 'FontSize', 14);
+                if iComp == 1
+                    legend(['S freq = ' num2str(sFreq)], 'FontSize', 14);
+                end
                 title(['Component ' num2str(iComp)], 'FontSize', 14)
                 i = i+1;
 
             end
             colormap jet
-%             saveas(figure(4), [pathParticipant 'fig_ssepComponents.png']);
-
-            
-            comp2Keep = 1; %input('Which component should be kept ?'); comp2Keep = 2;
+            saveas(figure(4), [pathParticipant 'fig_ssepComponents.png']);
+      
+            comp2Keep = input('Which component should be kept ?'); %comp2Keep = 2;
             compMax   = lambdaIndex(comp2Keep);
             comp2plot = compMaps(:,compMax);
-
+            
             %% Reconstruct component time series
-                             
+
             compTime = [];
             compTime = W(:,compMax)' * data;
 
             compFFT = [];
             compFFT = abs(fft(compTime',fftRes,1) / (length(compTime)-1)).^2;
 
+
             [M, fIndex] = max(compFFT);
-            if strcmpi(Conditions{iCondition}, 'noneRestST')
-                freqMax = sFreq;
-            else
-                freqMax = round(Hz(fIndex),2);
-            end
+            freqMax = round(Hz(fIndex),2);
             timeVector  = linspace(1, round(length(compTime(:,~isnan(compTime)))/freqEEG), length(compTime(:,~isnan(compTime))));
 
             figure(5)
@@ -253,7 +260,7 @@ for iParticipant = length(Participants)
                 xlabel('Frequency (Hz)', 'FontSize', 14) ; ylabel('Power', 'FontSize', 14);
             legend(['Peak frequency = ' num2str(freqMax)], 'FontSize', 14);
             title('Component FFT', 'FontSize', 14);
-%             saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
+            saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
 
             if abs(sFreq-freqMax) > .5
                 if strcmpi(Conditions{iCondition}, 'noneRestST') ~= 1
@@ -288,10 +295,10 @@ for iParticipant = length(Participants)
             subplot(2,2,[3:4]); plot(Hz,compSNR,'ro-','linew',1,'markersize',5,'markerface','w'); hold on;
             plot(Hz,elecSNR,'ko-','linew',1,'markersize',5,'markerface','w');
             set(gca,'xlim',xlim); xlabel('Frequency (Hz)', 'FontSize', 14), ylabel('SNR', 'FontSize', 14); legend({'Component'; electrode}, 'FontSize', 14); clear xlim
-%             saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
+            saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
 
-            save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_comp.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'eventOnset', 'beatOnset', 'freqEEG');
-            save([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'chans2interp');
+            save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_compRESS.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'beatOnset', 'freqEEG');
+%             save([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'chans2interp');
 
             clear sCovariance rCovariance W Lambdas comp2plot lambdaIndex lambdaSorted timeVector...
                   rCovDistance rCovMean rCovReject rCovTemp rCovZ sCovDistance sCovMean sCovReject sCovTemp sCovZ...

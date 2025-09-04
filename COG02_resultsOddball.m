@@ -7,11 +7,12 @@ pathData    = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontr
 pathResults = '/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/';
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
-                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'};
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
+                'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'; '02'};
 Conditions   = {'stimRest_DT'; 'stimTap_DT'; 'stimWalk_DT'; 'syncTap_DT'; 'syncWalk_DT'};
 
-for iParticipant = 1:length(Participants)
+for iParticipant = length(Participants)
 
     for iSession = 1%:length(Sessions)
         dataCog = readtable([pathData Participants{iParticipant} '/' Sessions{iSession} '/Expe/oddball.xlsx']);

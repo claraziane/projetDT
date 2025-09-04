@@ -41,7 +41,7 @@ pks2Keep = [];
 
 % if one zero value is missing
 pksSingle = [];
-for iPksFilt = 1:length(pksFilt)-3
+for iPksFilt = 2:length(pksFilt)-3
     if mean(pksFiltTemp(iPksFilt:iPksFilt+3)) == 1
         pksFiltTemp(iPksFilt+3:end+1) = pksFiltTemp(iPksFilt+2:end);
         pksFiltTemp(iPksFilt+2) = 0;
@@ -71,7 +71,7 @@ pksFilt(pksFilt < peakThreshold) = [];
 
 % Find peaks corresponding to tap max force
 itiTemp =  min(diff(locsFilt));
-[pks,locs] = findpeaks(tapData, 'MinPeakHeight', 1, 'MinPeakDistance', itiTemp-300);
+[pks,locs] = findpeaks(tapData, 'MinPeakHeight', 1, 'MinPeakDistance', itiTemp-500);
 % plot(locs, tapData(locs), 'k*')
 
 % Find tap onsets
@@ -129,10 +129,10 @@ for iTap = 1:length(ITI)
 
     if iTap <= length(ITI)
 
-        if ITI(iTap) > mean(ITI) + 250
+        if ITI(iTap) > median(ITI) + 250
             warning([' !!! Seems like at least one tap is missing around frame ' num2str(tapOnset(iTap)) ' !!']);
             PB = 1;
-        elseif ITI(iTap) < mean(ITI) - 250
+        elseif ITI(iTap) < median(ITI) - 250
             warning([' !!! Seems like there are too many taps around frame ' num2str(tapOnset(iTap)) ' !!']);
             PB = 1;
         end

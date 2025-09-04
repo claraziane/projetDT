@@ -1,0 +1,15 @@
+resultsTable.mvtVar(108) = NaN;
+resultsTable.mvtVar(213) = NaN;
+resultsTable.mvtVar(266) = NaN;
+resultsTable.mvtVar(270) = NaN;
+resultsTable.mvtVar(285) = NaN;
+resultsTable.IMI(12) = NaN;
+resultsTable.IMI(16) = NaN;
+resultsTable.IMI(73) = NaN;
+resultsTable.IMI(186) = NaN;
+resultsTable.syncConsistency(85) = NaN;
+resultsTable.syncConsistency(183) = NaN;
+resultsTable.syncConsistency(277) = NaN;
+resultsTable.stabilityIndex(31) = NaN;
+resultsTable.stabilityIndex(32) = NaN;
+resultsTable.stabilityIndex(64) = NaN;

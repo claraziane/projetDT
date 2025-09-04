@@ -30,37 +30,37 @@ kineticFilt = filtfilt(f,e,Kinetics);
 
 % Find envelop peaks
 peakThreshold = 30; %40
-[pksFilt, locsFilt] = findpeaks(kineticFilt);
+[pksFilt, locsFilt] = findpeaks(kineticFilt, 'MinPeakDistance', 800);
 
-% Find first stepOnset and remove peaks before first stepOnset
-[minPksFilt, minIndexPksFilt] = min(pksFilt(1:3));
-if minIndexPksFilt > 1
-    locsFilt(1:minIndexPksFilt-1) = [];
-    pksFilt(1:minIndexPksFilt-1) = [];
-end
-
-% Only keep one peak per step
-pksFiltTemp = pksFilt;
-pksFiltTemp(pksFilt < peakThreshold) = 0;
-pksFiltTemp(pksFilt > peakThreshold) = 1;
-pks2Keep = [];
-
-% if one zero value is missing
-pksSingle = [];
-for iPksFilt = 1:length(pksFilt)-3
-    if mean(pksFiltTemp(iPksFilt:iPksFilt+3)) == 1
-        pksFiltTemp(iPksFilt+3:end+1) = pksFiltTemp(iPksFilt+2:end);
-        pksFiltTemp(iPksFilt+2) = 0;
-
-        pksFilt(iPksFilt+3:end+1) = pksFilt(iPksFilt+2:end);
-        pksFilt(iPksFilt+2) = 0;
-
-        locsFilt(iPksFilt+3:end+1) = locsFilt(iPksFilt+2:end);
-        locsFilt(iPksFilt+2) = locsFilt(iPksFilt+2)-1;
-    end
-    if pksFiltTemp(iPksFilt) == 1 && pksFiltTemp(iPksFilt-1) == 0 && pksFiltTemp(iPksFilt+1) == 0
-        pksSingle = [pksSingle; locsFilt(iPksFilt)];
-    end
+% % Find first stepOnset and remove peaks before first stepOnset
+% [minPksFilt, minIndexPksFilt] = min(pksFilt(1:3));
+% if minIndexPksFilt > 1
+%     locsFilt(1:minIndexPksFilt-1) = [];
+%     pksFilt(1:minIndexPksFilt-1) = [];
+% end
+% 
+% % Only keep one peak per step
+% pksFiltTemp = pksFilt;
+% pksFiltTemp(pksFilt < peakThreshold) = 0;
+% pksFiltTemp(pksFilt > peakThreshold) = 1;
+% pks2Keep = [];
+% 
+% % if one zero value is missing
+% pksSingle = [];
+% for iPksFilt = 1:length(pksFilt)-3
+%     if mean(pksFiltTemp(iPksFilt:iPksFilt+3)) == 1
+%         pksFiltTemp(iPksFilt+3:end+1) = pksFiltTemp(iPksFilt+2:end);
+%         pksFiltTemp(iPksFilt+2) = 0;
+% 
+%         pksFilt(iPksFilt+3:end+1) = pksFilt(iPksFilt+2:end);
+%         pksFilt(iPksFilt+2) = 0;
+% 
+%         locsFilt(iPksFilt+3:end+1) = locsFilt(iPksFilt+2:end);
+%         locsFilt(iPksFilt+2) = locsFilt(iPksFilt+2)-1;
+%     end
+%     if pksFiltTemp(iPksFilt) == 1 && pksFiltTemp(iPksFilt-1) == 0 && pksFiltTemp(iPksFilt+1) == 0
+%         pksSingle = [pksSingle; locsFilt(iPksFilt)];
+%     end
 
     %     if pksFiltTemp(iPksFilt) == 1
     %
@@ -87,15 +87,16 @@ for iPksFilt = 1:length(pksFilt)-3
     %
     %     end
 
-end
+% end
 
-for iPksFilt = 1:length(pksFilt)
-    if pksFiltTemp(iPksFilt) == 0 && iPksFilt ~= length(pksFilt)
-        pks2Keep = [pks2Keep; iPksFilt+1];
-    end
-end
-locsFilt = locsFilt(pks2Keep);
-pksFilt = pksFilt(pks2Keep);
+% for iPksFilt = 1:length(pksFilt)
+%     if pksFiltTemp(iPksFilt) == 0 && iPksFilt ~= length(pksFilt)
+%         pks2Keep = [pks2Keep; iPksFilt+1];
+%     end
+% end
+% locsFilt = locsFilt(pks2Keep);
+% pksFilt = pksFilt(pks2Keep);
+pksSingle = locsFilt;
 
 % Remove peaks below peakThreshold
 locsFilt(pksFilt < peakThreshold) = [];
@@ -176,15 +177,16 @@ for iStep = 1:length(stepOnsetDiff)
 
     if iStep <= length(stepOnsetDiff)
 
-        if stepOnsetDiff(iStep) > mean(stepOnsetDiff) + 150
+        if stepOnsetDiff(iStep) > median(stepOnsetDiff) + 150
             warning([' !!! Seems like at least one step is missing around frame ' num2str(stepOnsets(iStep)) ' !!']);
             PB = 1;
-        elseif stepOnsetDiff(iStep) < mean(stepOnsetDiff) - 150
+        elseif stepOnsetDiff(iStep) < median(stepOnsetDiff) - 150
             warning([' !!! Seems like there are too many steps around frame ' num2str(stepOnsets(iStep)) ' !!']);
             PB = 1;
         end
 
         if PB == 1
+            
             Action = input('Do you want to replace step [1], add step [2], remove step [3], or do nothing [0] ?');
             if Action == 0
             elseif Action == 1
@@ -213,6 +215,5 @@ for iStep = 1:length(stepOnsetDiff)
     end
 
 end
-
 
 end
