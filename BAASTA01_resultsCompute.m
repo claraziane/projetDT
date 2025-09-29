@@ -95,7 +95,7 @@ for iParticipant = 1:length(Participants)
 
         end
         %% Save results
-        save([pathParticipant '/resultsBAASTA.mat'], 'resultsBAASTA');
+%         save([pathParticipant '/resultsBAASTA.mat'], 'resultsBAASTA');
 
     end
 
@@ -119,7 +119,7 @@ for iSession = 1:length(Sessions)
         resultsBAASTA.BTI = BTI(iParticipant,iSession);
 
         %% Save results
-        save([pathParticipant '/resultsBAASTA.mat'], 'resultsBAASTA');
+%         save([pathParticipant '/resultsBAASTA.mat'], 'resultsBAASTA');
                  
     end
 
