@@ -14,7 +14,7 @@ Sessions     = {'01'; '02'; '03'};
 
 % Conditions   = {'stimTapST'; 'stimTapDT';  'stimWalkST'; 'stimWalkDT';...
 %                 'syncTapST'; 'syncTapDT';'syncWalkST'; 'syncWalkDT';};
-Conditions   = {'stimTap'; 'stimWalk';...
+Conditions   = {'stimRest'; 'stimTap'; 'stimWalk';...
                 'syncTap'; 'syncWalk'};
 
 varX = {'BTI'; 'BAT'; 'Flexibility'; 'Inhibition'; 'workingMemory'; 'power'; 'phaseR'; 'stabilityIndex'}; 
@@ -28,10 +28,10 @@ corrType = 'Spearman';
 for iSession = 1%:length(Sessions)
     iFig = 1;
 
-    for iX = 1:length(varX)
+    for iX = 1:5%length(varX)
         xLabel = (xLabels{iX});
 
-        for iY = 1:length(varY)
+        for iY = 6:7%length(varY)
             yLabel = (yLabels{iY});
 
             for iCondition = 1:length(Conditions)
@@ -39,9 +39,9 @@ for iSession = 1%:length(Sessions)
                 for iParticipant = 1:length(Participants)
 
                     % Load data
-                     load([pathResults Participants{iParticipant} '/01/RESS/resultsEEG.mat'])
-                     load([pathResults Participants{iParticipant} '/01/resultsSync.mat'])
-                     load([pathResults Participants{iParticipant} '/01/resultsBehav.mat'])
+                     load([pathResults Participants{iParticipant} '/01/vBrainOnly/resultsEEG.mat'])
+%                      load([pathResults Participants{iParticipant} '/01/resultsSync.mat'])
+%                      load([pathResults Participants{iParticipant} '/01/resultsBehav.mat'])
                      load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsDtCost.mat'])
                     
                      if strcmpi(varX{iX}, 'BTI') || strcmpi(varX{iX}, 'BAT')

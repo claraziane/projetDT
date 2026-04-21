@@ -11,19 +11,19 @@ Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; '
                 'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'; '02'; '03'};
 
-Conditions   = {'stimTap'; 'stimWalk';...
+Conditions   = {'stimRest'; 'stimTap'; 'stimWalk';...
                 'syncTap'; 'syncWalk'};
-Variables    = {'imiMean'; 'imiCV'; 'phaseAngleMean'; 'phaseErrorMean'; 'resultantLength'; 'power'; 'phaseR'; 'stabilityIndex'};
+Variables    = {'power'; 'phaseR'; 'stabilityIndex'}; %'imiMean'; 'imiCV'; 'phaseAngleMean'; 'phaseErrorMean'; 'resultantLength'; 
 
 
-for iParticipant = length(Participants)
+for iParticipant = 1:length(Participants)
 
     for iSession = 1%:length(Sessions)
 
         % Load data
-        load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsBehav.mat'])
-        load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsSync.mat'])
-        load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/RESS/resultsEEG.mat'])
+%         load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsBehav.mat'])
+%         load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsSync.mat'])
+        load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/vBrainOnly/resultsEEG.mat'])
     
         for iCondition = 1:length(Conditions)
 
@@ -45,7 +45,7 @@ for iParticipant = length(Participants)
                     scoreDT = resultsEEG.([Conditions{iCondition} 'DT']).([Variables{iVar}]);
                 end
 
-                resultsDtCost.(Conditions{iCondition}).(Variables{iVar}) = scoreDT - scoreST;%(abs(scoreDT - scoreST) / scoreST)*100; 
+                resultsDtCost.(Conditions{iCondition}).(Variables{iVar}) = (abs(scoreDT - scoreST) / scoreST)*100; %scoreDT - scoreST;%
 
             end % end Variables
 

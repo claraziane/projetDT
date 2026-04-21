@@ -18,7 +18,7 @@ function[beatFreq, BPM, IOI, beatOnset] = getBeat_fastStim(Audio, Freq, preferre
 figure; plot(Audio); hold on;
 
 [pks, locs] = findpeaks(Audio, 'MinPeakHeight', 0);
-plot(locs, pks, 'k*'); hold on;
+% plot(locs, pks, 'k*'); hold on;
 interval = 2000/(preferredBPM/60);
 beatOnset = [];
 beatValue = [];

@@ -18,19 +18,19 @@ addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/GED-master
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
                 'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
                 'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
-Sessions     = {'01'; '02'; '03'};
-Conditions   = {'stimRestST'; 'stimRestDT';...
-                 'stimTapST';  'stimTapDT';  'syncTapST'; 'syncTapDT';...
-                'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'};
+Sessions     = {'01'};
+Conditions   = {'noneRestST'; 'stimRestST'; 'stimRestDT';...
+                 'noneTapST';  'stimTapST';  'stimTapDT';  'syncTapST'; 'syncTapDT';...
+                'noneWalkST'; 'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'};
 
 % Parameters for eigendecomposition
 sFWHM = .3; % FWHM of stim frequency
 
 eeglab;
-for iParticipant = length(Participants)
+for iParticipant = 10%1:length(Participants)
     disp(Participants{iParticipant})
 
-    for iSession = 1%:length(Sessions)
+    for iSession = length(Sessions)
 
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
@@ -41,49 +41,49 @@ for iParticipant = length(Participants)
             load([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'])
         end
 
-        for iCondition = 9:length(Conditions)
+        for iCondition = 1%length(Conditions)
 
             % Create folder for participant's results if does not exist
-            pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/RESS/', Conditions{iCondition}, '/');
+            pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/vBrainOnly/', Conditions{iCondition}, '/');
             if ~exist(pathParticipant, 'dir')
                 mkdir(pathParticipant)
             end
        
             % Import EEG
-            pathImport = [pathEEG Participants{iParticipant} '/' Sessions{iSession} '/' Conditions{iCondition} '/'];
-            fileRead   = [Participants{iParticipant} '_cleaned_with_ICA.set'];
+%             if iParticipant <= 2
+%                 participantStr = ['P' num2str(iParticipant)];
+%             else
+                participantStr = Participants{iParticipant};
+%             end
+            pathImport = [pathEEG participantStr '/' Sessions{iSession} '/' Conditions{iCondition} '/'];
+            fileRead   = [participantStr '_cleaned_with_ICA.set'];
+           
             EEG = pop_loadset('filename', fileRead,'filepath', pathImport);
             [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','on');
             freqEEG = EEG.srate;
             chanLocs = EEG.chanlocs;
 
             % Electrode used for 'best-electrode' analyses
-            electrode = 'Cz';
+            if strcmpi(Conditions{iCondition}(5:7), 'Tap') == 1
+                electrode = 'C3';
+            elseif strcmpi(Conditions{iCondition}(5:8), 'Walk') == 1
+                electrode = 'Cz';
+            elseif strcmpi(Conditions{iCondition}(5:8), 'Rest') == 1
+                electrode = 'FCz';
+            end
             elecLoc = chanLocs(strcmpi([{chanLocs.labels}], electrode) == 1);
             elecPos = strcmpi([{chanLocs.labels}], electrode);
             [~, elecPos] = max(elecPos);
 
-            % Extract mvt and beat onsets                   
-%             Event = [];
-%             if strcmpi(Conditions{iCondition}(5:7), 'Tap') == 1
-%                 Event = 'Tap';
-%             elseif strcmpi(Conditions{iCondition}(5:8), 'Walk') == 1
-%                 Event = 'Step';
-%             elseif strcmpi(Conditions{iCondition}(5:8), 'Rest') == 1
-%                  Event = 'RAC';
-%             end         
-%                     
-%             eventLoc = [];
-%             eventLoc   = find(strcmp({EEG.event.type}, Event));
-% 
-%             eventOnset = [];
-%             eventOnset = [EEG.event(eventLoc).latency];
+            if strcmpi(Conditions{iCondition}(1:4), 'none') == 1
+                load([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/stim' Conditions{iCondition}(5:end) '_compBrainOnly.mat'], 'beatOnset')
+            else
+                beatLoc   = [];
+                beatLoc   = find(strcmp({EEG.event.type}, 'RAC'));
 
-            beatLoc   = [];
-            beatLoc   = find(strcmp({EEG.event.type}, 'RAC'));
-            
-            beatOnset = [];
-            beatOnset = [EEG.event(beatLoc).latency];
+                beatOnset = [];
+                beatOnset = [EEG.event(beatLoc).latency];
+            end
 
             % Compute S freq
             nBeats = length(beatOnset);
@@ -92,20 +92,6 @@ for iParticipant = length(Participants)
             data = [];
             data = double(EEG.data);
             dataTime = size(data,2);
-
-%             % Filter above .5 Hz
-%             [d,c] = butter(3, .5/(freqEEG/2), 'high') ; % High-pass filter parameters (>0.5 Hz)
-%             for iChan = 1:EEG.nbchan
-%                 data(iChan,:) = filtfilt(d,c,data(iChan,:));
-%             end
-%             data = double(data);
-% 
-%             % Filter under 40 Hz
-%             [b,a] = butter(3, 40/(freqEEG/2), 'low') ; % Low-pass filter parameters (<40 Hz)
-%             for iChan = 1:EEG.nbchan
-%                 data(iChan,:) = filtfilt(b,a,data(iChan,:));
-%             end
-%             data = double(data);
 
             % FFT Parameters
             fftRes   = ceil(freqEEG/.02); % FFT resolution of .02 Hz
@@ -216,6 +202,7 @@ for iParticipant = length(Participants)
                 tempTime = W(:,lambdaIndex(iComp))' * data;
 
                 tempFFT = [];
+
                 tempFFT = abs(fft(tempTime',fftRes,1) / (length(tempTime)-1)).^2;
                
                 subplot(3,5,10+i); plot(Hz,tempFFT);
@@ -263,9 +250,9 @@ for iParticipant = length(Participants)
             saveas(figure(5), [pathParticipant 'fig_ssepTopo.png']);
 
             if abs(sFreq-freqMax) > .5
-                if strcmpi(Conditions{iCondition}, 'noneRestST') ~= 1
+%                 if strcmpi(Conditions{iCondition}, 'noneRestST') ~= 1
                     freqMax = input('What is the peak frequency ?');
-                end
+%                 end
             end
 
             %% Compute SNR spectrum
@@ -297,8 +284,8 @@ for iParticipant = length(Participants)
             set(gca,'xlim',xlim); xlabel('Frequency (Hz)', 'FontSize', 14), ylabel('SNR', 'FontSize', 14); legend({'Component'; electrode}, 'FontSize', 14); clear xlim
             saveas(figure(6), [pathParticipant 'fig_ssepVSelectrode.png']);
 
-            save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_compRESS.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'beatOnset', 'freqEEG');
-%             save([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'chans2interp');
+            save([pathPreproc Participants{iParticipant} '/' Sessions{iSession} '/EEG/' Conditions{iCondition} '_compBrainOnly.mat'], 'compTime', 'compSNR', 'comp2plot', 'comp2Keep', 'chanLocs', 'freqMax', 'Hz', 'sFWHM', 'beatOnset', 'freqEEG');
+            save([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'chans2interp');
 
             clear sCovariance rCovariance W Lambdas comp2plot lambdaIndex lambdaSorted timeVector...
                   rCovDistance rCovMean rCovReject rCovTemp rCovZ sCovDistance sCovMean sCovReject sCovTemp sCovZ...

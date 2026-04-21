@@ -13,8 +13,10 @@ Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; '
                 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35';...
                 'P36'; 'P37'; 'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'};
-Conditions   = {'stimTapST'; 'syncTapST';  'stimWalkST'; 'syncWalkST';...
-               'stimTapDT' ; 'syncTapDT';'stimWalkDT'; 'syncWalkDT';};
+Conditions   = {'stimRestST'; 'stimTapST'; 'syncTapST';  'stimWalkST'; 'syncWalkST';...
+                'stimRestDT'; 'stimTapDT' ; 'syncTapDT';'stimWalkDT'; 'syncWalkDT';};
+Titles   = {'Ignore Rest (Single task)'; 'Ignore Tap (Single task)'; 'Sync Tap (Single task)';  'Ignore Walk (Single task)'; 'Sync Walk (Single task)';...
+                'Ignore Rest (Oddball)';    'Ignore Tap (Oddball)' ;     'Sync Tap (Oddball)';      'Ignore Walk (Oddball)';     'Sync Walk (Oddball)'};
 
 
 varX = {'BTI'; 'BAT'; 'pacedTap'; 'Anisochrony'; 'Adaptive' ; 'Adaptive'; 'Adaptive' ;'Adaptive'; 'Adaptive'; 'Adaptive'; 'Adaptive'}; 
@@ -30,21 +32,21 @@ xLabels = {'Beat Tracking Index';...
        'Sensitivity Index (d'')_{IOI 75ms longer}';...
        'Continuation CV_{Inter-Movement Interval}'};
 
-varY = {'imiMean'; 'imiCV'; 'phaseAngleMean'; 'resultantLength'; 'stabilityIndex'};
+varY = {'imiMean'; 'imiCV'; 'phaseAngleMean'; 'resultantLength'; 'stabilityIndex'; 'power'; 'phaseR'};
 yLabels = {'Inter-Movement Interval (ms)';...
     'Coefficient of Variation_{Inter-Movement Interval}';...
     'Synchronization Accuracy (°)';...
     'Synchronization Consistency (logit)';...
-    'Stability Index (Hz)'}';
+    'Stability Index (Hz)'; 'Power (SNR)'; 'Inter-Trial Phase Coherence (logit)'}';
 
 corrType = 'Spearman';
 for iSession = 1:length(Sessions)
     iFig = 1;
 
-    for iX = length(varX)
+    for iX = 2%3:length(varX)
         xLabel = (xLabels{iX});
 
-        for iY = 1:length(varY)
+        for iY = 5:length(varY)
             yLabel = (yLabels{iY});
 
             for iCondition = 1:length(Conditions)
@@ -78,12 +80,16 @@ for iSession = 1:length(Sessions)
                      end
 
                      % Extract Y variable
-                     if strcmpi(varY{iY}, 'stabilityIndex')
-                         load([pathResults Participants{iParticipant}  '/' Sessions{iSession} '/RESS/resultsEEG.mat'])
+                     if strcmpi(varY{iY}, 'stabilityIndex') || strcmpi(varY{iY}, 'power') || strcmpi(varY{iY}, 'phaseR')
+                         load([pathResults Participants{iParticipant}  '/' Sessions{iSession} '/vBrainOnly/resultsEEG.mat'])
                          if strcmpi(resultsEEG.(Conditions{iCondition}).compKeep, 'N')
                              dataY(iParticipant,iCondition) = NaN;
                          else
-                             dataY(iParticipant,iCondition) = resultsEEG.(Conditions{iCondition}).(varY{iY})  ;
+                             if  strcmpi(varY{iY}, 'phaseR')
+                                 dataY(iParticipant,iCondition) = log(resultsEEG.(Conditions{iCondition}).(varY{iY}) ./ (1- resultsEEG.(Conditions{iCondition}).(varY{iY})));
+                             else
+                                 dataY(iParticipant,iCondition) = resultsEEG.(Conditions{iCondition}).(varY{iY})  ;
+                             end
                          end
                      elseif strcmpi(varY{iY}, 'imiMean') || strcmpi(varY{iY}, 'imiCV')
                          load([pathResults Participants{iParticipant}  '/' Sessions{iSession} '/resultsBehav.mat'])
@@ -101,8 +107,8 @@ for iSession = 1:length(Sessions)
             end
             
             % Plot
-            plotCorrel(dataX, dataY, xLabel, yLabel, Conditions, corrType)
-            saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/BAASTA/' corrType '/fig_' varY{iY} 'vs' varX{iX} '_' xLabel{iX} '.png']);
+            plotCorrel(dataX, dataY, xLabel, yLabel, Titles, corrType)
+            saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/BAASTA/Spearman/fig_vBrainOnly_' varY{iY} 'vs' varX{iX} '.png']);
 
             clear dataX dataY
             iFig = iFig+1;

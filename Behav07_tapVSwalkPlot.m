@@ -13,21 +13,21 @@ Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; '
                 'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'; '02'; '03'};
 
-Conditions   = {'stim'; 'stim'; 'sync'; 'sync'}; %'none'; 
-Compare      = {  'ST';   'DT';   'ST';   'DT'};% {'ST'; 'ST'; 'DT'; 'ST'; 'DT'};
+Conditions   = {'stim';  'sync'; 'stim'; 'sync'}; %'none'; 
+Compare      = {  'ST';  'ST';   'DT'; 'DT'};% {'ST'; 'ST'; 'DT'; 'ST'; 'DT'};
 
-var = {'imiMean'; 'imiCV'; 'cadence'; 'phaseErrorMean'; 'phaseAngleMean'; 'resultantLength'; 'stabilityIndex'}; %{'imiMean'; 'imiCV'; 'cadence'}; 
-figTitles = {'Inter-Movement Interval'; 'Variability of Inter-Movement Interval'; 'Cadence'; 'Phase Error'; 'Synchronization Accuracy'; 'Synchronization Consistency'; 'Stability Index (Hz)'}; %{'imiMean'; 'imiCV'; 'cadence'}; 
+var = {'imiMean'; 'imiCV'; 'cadence'; 'phaseErrorMean'; 'phaseAngleMean'; 'resultantLength'; 'stabilityIndex'; 'power'; 'phaseR'}; %{'imiMean'; 'imiCV'; 'cadence'}; 
+figTitles = {'Inter-Movement Interval'; 'Variability of Inter-Movement Interval'; 'Cadence'; 'Phase Error'; 'Synchronization Accuracy'; 'Synchronization Consistency'; 'Stability Index (Hz)'; 'Power (SNR)'; 'Phase Coupling (logit)'}; %{'imiMean'; 'imiCV'; 'cadence'}; 
 
 xLabels = {'Tap'};
 yLabels = {'Walk'};
-Titles  = {'Ignore (ST)'; 'Ignore (DT)'; 'Sync (ST)'; 'Sync (DT)'}; % 'Silence (ST)'; 
+Titles  = {'Ignore (Single task)';  'Sync (Single task)'; 'Ignore (Oddball)'; 'Sync (Oddball)'}; % 'Silence (ST)'; 
 corrType = 'Spearman';
 
 for iSession = 1%:length(Sessions)
     iFig = 1;
 
-    for iVar = 4:length(var)
+    for iVar = 7:length(var)
         xLabel = (xLabels{1});
 
 %         for iY = 1:length(varY)
@@ -67,24 +67,29 @@ for iSession = 1%:length(Sessions)
                         dataX(iParticipant,iCondition) = log(resultsSync.(condX).(var{iVar}) ./ (1-resultsSync.(condX).(var{iVar})));
                         dataY(iParticipant,iCondition) = log(resultsSync.(condY).(var{iVar}) ./ (1-resultsSync.(condY).(var{iVar})));
 
-                    elseif strcmpi(var{iVar}, 'stabilityIndex')
-                        load([pathResults Participants{iParticipant}  '/' Sessions{iSession} '/RESS/resultsEEG.mat']);
+                    elseif strcmpi(var{iVar}, 'stabilityIndex') || strcmpi(var{iVar}, 'power')
+                        load([pathResults Participants{iParticipant}  '/' Sessions{iSession} '/vBrainOnly/resultsEEG.mat']);
                         dataX(iParticipant,iCondition) = resultsEEG.(condX).(var{iVar});
                         dataY(iParticipant,iCondition) = resultsEEG.(condY).(var{iVar});
-                    
+                    elseif strcmpi(var{iVar}, 'phaseR')
+                        load([pathResults Participants{iParticipant}  '/' Sessions{iSession} '/vBrainOnly/resultsEEG.mat']);
+                        phaseX = resultsEEG.(condX).(var{iVar});
+                        phaseY = resultsEEG.(condY).(var{iVar});
+                        dataX(iParticipant,iCondition)  = log(phaseX ./ (1-phaseX));
+                        dataY(iParticipant,iCondition)  = log(phaseY ./ (1-phaseY));
                     else
                         % Load data
                         load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsBehav.mat'])
                                dataX(iParticipant,iCondition) = resultsBehav.(condX).(var{iVar});
                                dataY(iParticipant,iCondition) = resultsBehav.(condY).(var{iVar});
 
-                        if strcmpi(Compare{iCondition}, 'DT')
-                            load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsDtCost.mat'])
-
-                            dataXCog(iParticipant,iCondition) = resultsDtCost.(condX(1:end-2)).(var{iVar});
-                            dataYCog(iParticipant,iCondition) = resultsDtCost.(condY(1:end-2)).(var{iVar});
-
-                        end
+%                         if strcmpi(Compare{iCondition}, 'DT')
+%                             load([pathResults  Participants{iParticipant} '/' Sessions{iSession} '/resultsDtCost.mat'])
+% 
+%                             dataXCog(iParticipant,iCondition) = resultsDtCost.(condX(1:end-2)).(var{iVar});
+%                             dataYCog(iParticipant,iCondition) = resultsDtCost.(condY(1:end-2)).(var{iVar});
+% 
+%                         end
 
 
                     end
@@ -92,11 +97,12 @@ for iSession = 1%:length(Sessions)
                 end
 
             end
-            
+            dataX = removeOutliers(dataX);
+            dataY = removeOutliers(dataY);
             % Plot
             plotCorrel(dataX, dataY, xLabel, yLabel, Titles, corrType)
             sgtitle([figTitles{iVar}], 'FontSize', 20, 'FontWeight', 'bold')
-            saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/tapVSwalk/fig_' var{iVar} '_tapVSwalk.png']);
+            saveas(figure(iFig), ['/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Results/All/' Sessions{iSession} '/tapVSwalk/' corrType '/fig_' var{iVar} '_tapVSwalk.png']);
 
 %             dataXCog(dataXCog == 0) = [];
 %             dataYCog(dataYCog == 0) = [];

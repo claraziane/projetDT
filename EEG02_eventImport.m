@@ -35,7 +35,7 @@ extFinal = '_events.set';
          
 warning('on')
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
-for iParticipant = length(Participants)
+for iParticipant = 1%length(Participants)
 
     for iSession = 1%:length(Sessions)
 
@@ -59,7 +59,7 @@ for iParticipant = length(Participants)
         load([pathData Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataTap.mat'])
         load([pathData Participants{iParticipant} '/' Sessions{iSession}, '/Behavioural/dataStep.mat'])
 
-        for iCondition =  1:length(Conditions)
+        for iCondition =  11%:length(Conditions)
 
             fileRead  = [Conditions{iCondition} extRoot];
             fileWrite = [Conditions{iCondition} extFinal];

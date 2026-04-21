@@ -26,11 +26,14 @@ else
     addpath('/Users/claraziane/Documents/Académique/Informatique/MATLAB/zapline-plus-main')
 end
 
-Participants = {'P45'}; %'P01'; 'P02'; 'P03';'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19'; 'P21'; 'P22'; 'P23'; 'P24'; 'P26'
-Sessions     = {'01'; '02'};
-Conditions   = {'noneRestST'; 'stimRestST'; 'stimRestDT';...
-                 'noneTapST';  'stimTapST';  'stimTapDT'; 'syncTapST'; 'syncTapDT';...
-                'noneWalkST'; 'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'};
+Participants = {'P01'; 'P02'; 'P03'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
+                'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'}; %'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 
+Sessions     = {'01'};
+Conditions   = {'noneRestST';  'noneTapST'; 'noneWalkST'; ...
+                'stimRestST'; 'stimRestDT';...
+                 'stimTapST';  'stimTapDT'; 'syncTapST'; 'syncTapDT';...
+                'stimWalkST'; 'stimWalkDT'; 'syncWalkST';'syncWalkDT'}; 
 
 
 extRoot  = '_events.set';
@@ -39,7 +42,7 @@ extRoot  = '_events.set';
 projectDT_bemobil_config
 for iParticipant = 1:length(Participants)
 
-    for iSession = 1%:length(Sessions)
+    for iSession = length(Sessions)
 
         pathExport = [pathImport 'All/' Sessions{iSession} '/'];
         pathRoot  = fullfile(pathImport, Participants{iParticipant}, Sessions{iSession}, '/EEG');
@@ -49,22 +52,27 @@ for iParticipant = 1:length(Participants)
             load([pathImport '03_Preprocessing/' Participants{iParticipant}, '/', Sessions{iSession}, '/chans2interp.mat']);
         end
 
-        for iCondition = 1:length(Conditions) 
+        for iCondition = 1%1:length(Conditions) 
             path2save = [pathImport '03_Preprocessing' filesep  Participants{iParticipant} filesep Sessions{iSession} filesep  Conditions{iCondition}];           
 
             % Load
             fileRead = [Conditions{iCondition} extRoot];
             EEG = pop_loadset('filename', fileRead,'filepath', pathRoot);
             [ALLEEG EEG CURRENTSET] = pop_newset(ALLEEG, EEG, 1,'gui','on');
-
+%             if length(EEG.chanlocs) == 68
+%                 warning('ECG channel')
+%                 pause()
+%             end
             % Remove line noise
             [ALLEEG EEG CURRENTSET] = bemobil_process_EEG_basics(ALLEEG, EEG, CURRENTSET,  [], {'ECG' 'x_dir' 'y_dir' 'z_dir'}, [], [], 'preprocessed.set', path2save , [], [], bemobil_config.zaplineConfig);
 
             %% Identify bad channels
-%             chan2remove = chans2interp.([Conditions{iCondition}]);
+%             [chans_to_interp, chan_detected_fraction_threshold, detected_bad_channels, rejected_chan_plot_handle, detection_plot_handle] = ...
+%                 bemobil_detect_bad_channels(EEG, ALLEEG, CURRENTSET, .7); %, chan2remove
+            chan2remove = chans2interp.([Conditions{iCondition}]);
             [chans_to_interp, chan_detected_fraction_threshold, detected_bad_channels, rejected_chan_plot_handle, detection_plot_handle] = ...
-                bemobil_detect_bad_channels(EEG, ALLEEG, CURRENTSET, .7); %, chan2remove
-
+                bemobil_detect_bad_channels_bis(EEG, ALLEEG, CURRENTSET, .7, chan2remove);
+         
             if length(chans_to_interp) > EEG.nbchan/5
                 warndlg(['In subject ' Participants{iParticipant} ', ' num2str(length(chans_to_interp)) ' of ' num2str(EEG.nbchan)...
                     ' channels were rejected, which is more than 1/5th!'])
@@ -83,6 +91,9 @@ for iParticipant = 1:length(Participants)
 
         end %Conditions
         clear chans2interp
+
+        
+        [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
     end %Sessions
     

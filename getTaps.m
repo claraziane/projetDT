@@ -23,7 +23,7 @@ tapFilt = filtfilt(f,e,abs(tapData));
 % plot(tapFilt)
 
 % Find envelop peaks
-peakThreshold = 0.3;
+peakThreshold = .2;%0.2;
 [pksFilt, locsFilt] = findpeaks(tapFilt);
 
 % Find first tap onset and remove peaks before first tap onset
@@ -71,7 +71,7 @@ pksFilt(pksFilt < peakThreshold) = [];
 
 % Find peaks corresponding to tap max force
 itiTemp =  min(diff(locsFilt));
-[pks,locs] = findpeaks(tapData, 'MinPeakHeight', 1, 'MinPeakDistance', itiTemp-500);
+[pks,locs] = findpeaks(tapData, 'MinPeakHeight', 1.5, 'MinPeakDistance', itiTemp-200); %.5
 % plot(locs, tapData(locs), 'k*')
 
 % Find tap onsets

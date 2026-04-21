@@ -5,7 +5,7 @@ clear bemobil_config
 % !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 % foldernames (NEED to have a filesep at the end, sorry!)
 % !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-bemobil_config.filename_prefix = 'P0';
+bemobil_config.filename_prefix = 'P';
 
 % ------------ IMPORTANT --------------
 % Adapt this data path to the place where you put the example data!
@@ -144,8 +144,8 @@ bemobil_config.number_of_dipoles = 1;
 bemobil_config.iclabel_classifier = 'lite';
 
 % 'Brain', 'Muscle', 'Eye', 'Heart', 'Line Noise', 'Channel Noise', 'Other'
-% bemobil_config.iclabel_classes = [1 7];
-bemobil_config.iclabel_classes = [1 2 4 5 6 7];
+bemobil_config.iclabel_classes = [1];
+% bemobil_config.iclabel_classes = [1 2 4 5 6 7];
 
 % if the threshold is set to -1, the popularity classifier is used (i.e. every IC gets the class with the highest
 % probability), if it is set to a value, the summed score of the iclabel_classes must be higher than this threshold to

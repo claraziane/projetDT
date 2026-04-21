@@ -1,5 +1,5 @@
 clear all;
-close all;
+% close all;
 clc;
 
 % Declare paths
@@ -9,8 +9,8 @@ addpath('/Users/claraziane/Documents/Académique/Informatique/projectFig/'); %Fu
 addpath('/Users/claraziane/Documents/Académique/Informatique/Toolbox/CircStat2012a/');
 
 Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; 'P12'; 'P13'; 'P15'; 'P16'; 'P17'; 'P18'; 'P19';...
-    'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
-    'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
+                'P21'; 'P22'; 'P23'; 'P24'; 'P25'; 'P26'; 'P27'; 'P28'; 'P29'; 'P30'; 'P31'; 'P33'; 'P34'; 'P35'; 'P36'; 'P37';...
+                'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 
 Mvt           = {'Tap'; 'Walk'};
 Instruction   = {'stim'; 'sync'};
@@ -20,11 +20,11 @@ rhythmSkills  = {'Good'; 'Poor'};
 syncCost      = {'Small'; 'Great'};
 Synchronizers = {'issync'; 'unsync'};
 
-variables = {'imiCV'; 'imiMean'; 'resultantLength'; 'phaseR'; 'stabilityIndex'};
-yLabels   = {'Coefficient of Variation_{Inter-Movement Interval}'; 'Inter-Movement Interval (ms)'; 'Synchronization Consistency'; 'Inter-Trial Phase Coherence'; 'Stability Index (Hz)'};
+variables = {'imiCV'; 'imiMean'; 'resultantLength'; 'power'; 'phaseR'; 'stabilityIndex'};
+yLabels   = {'Coefficient of Variation_{Inter-Movement Interval}'; 'Inter-Movement Interval (ms)'; 'Synchronization Consistency'; 'Power (SNR)'; 'Phase Coupling (logit)'; 'Stability Index (Hz)'};
 
 iPlot = 1;
-for iVariable = 3
+for iVariable = 5:6
 
     if strcmpi(variables{iVariable}, 'imiCV') || strcmpi(variables{iVariable}, 'imiMean')
         Category = 'Motor';
@@ -32,12 +32,12 @@ for iVariable = 3
     elseif strcmpi(variables{iVariable}, 'resultantLength')
         Category = 'Sync';
         structureName = 'resultsSync';
-    elseif strcmpi(variables{iVariable}, 'phaseR') || strcmpi(variables{iVariable}, 'stabilityIndex')
+    elseif strcmpi(variables{iVariable}, 'power') || strcmpi(variables{iVariable}, 'phaseR') || strcmpi(variables{iVariable}, 'stabilityIndex')
          Category = 'EEG';
          structureName = 'resultsEEG';
     end
 
-    for iInteraction = 2:3
+    for iInteraction = 3
 
         % Preallocate matrix
         DATA = nan(length(Participants),2*2);
@@ -54,12 +54,12 @@ for iVariable = 3
                 if strcmpi(Category, 'Motor') || strcmpi(Category, 'Sync')
                     Structure = load([pathImport structureName '.mat']);
                 elseif strcmpi(Category, 'EEG')
-                    Structure = load([pathImport 'RESS/' structureName '.mat']);
+                    Structure = load([pathImport 'vBrainOnly/' structureName '.mat']);
                 end
                         
-                [splitBAT] = findMedianSplit('BAT', [], 'resultsBAASTA');
-                [splitBTI] = findMedianSplit('BTI', [], 'resultsBAASTA');
-                [splitRVL] = findMedianSplit('resultantLength', 'syncTap', 'resultsDtCost');
+%                 [splitBAT] = findMedianSplit('BAT', [], 'resultsBAASTA');
+%                 [splitBTI] = findMedianSplit('BTI', [], 'resultsBAASTA');
+%                 [splitRVL] = findMedianSplit('resultantLength', 'syncTap', 'resultsDtCost');
 
                 for iCompare = 1:2
 
@@ -84,7 +84,7 @@ for iVariable = 3
                     elseif iInteraction == 3 % Difficulty * Instruction
                         condFirst  = [Instruction{iCondition}];
                         condSecond = [Difficulty{iCompare}];
-                        if strcmpi(variables{iVariable}, 'resultantLength')
+                        if strcmpi(variables{iVariable}, 'resultantLength') || strcmpi(variables{iVariable}, 'phaseR')
                             a = log(Structure.(structureName).([condFirst Mvt{1} condSecond]).([variables{iVariable}]) ./ (1-Structure.(structureName).([condFirst Mvt{1} condSecond]).([variables{iVariable}])));
                             b = log(Structure.(structureName).([condFirst Mvt{2} condSecond]).([variables{iVariable}]) ./ (1-Structure.(structureName).([condFirst Mvt{2} condSecond]).([variables{iVariable}])));
                             DATA(iParticipant, iPlot+iCompare-1) = (a + b)/2;
@@ -225,7 +225,7 @@ for iVariable = 3
         end % End Conditions
 
         if strcmpi(Category, 'EEG')
-            Category = 'EEG/RESS';
+            Category = 'EEG/vBrainOnly/Model02/';
         end
 
         if iInteraction == 1
@@ -233,15 +233,16 @@ for iVariable = 3
             title('Movement * Difficulty Interaction')
             saveas(figure(1), [pathResults '/All/01/' Category '/fig_' variables{iVariable} '_Mvt-Difficulty.png'])
 
-        elseif iInteraction == 2
+        elseif iInteraction == 2            
             plotScatter(DATA, Instruction, Mvt, yLabels{iVariable});
             title('Movement * Instruction Interaction')
             saveas(figure(2), [pathResults '/All/01/' Category '/fig_' variables{iVariable} '_Mvt-Instruction.png'])
 
         elseif iInteraction == 3
+            DATA = removeOutliers(DATA);
             plotScatter(DATA, Difficulty, Instruction, yLabels{iVariable});
             title('Instruction * Difficulty Interaction')
-            saveas(figure(3), [pathResults '/All/01/' Category '/fig_' variables{iVariable} '_Difficulty-Instruction.png'])
+            saveas(figure(3), [pathResults '/All/01/' Category '/Outliers/fig_' variables{iVariable} '_Difficulty-Instruction.png'])
      
 %         elseif iInteraction == 4
 %             plotScatter(DATA, Instruction, beatPerceiver, yLabels{iVariable});

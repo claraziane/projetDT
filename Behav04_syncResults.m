@@ -56,13 +56,15 @@ for iSession = 1%:length(Sessions)
                     noSyncPhase(iParticipant, iPlot+iCompare-1, iSession) = rad2deg(phaseMean(iParticipant, iPlot+iCompare-1, iSession));
                     phaseMean(iParticipant, iPlot+iCompare-1, iSession)   = NaN;
                     phaseCI(iParticipant, : , iPlot+iCompare-1, iSession) = NaN;
+                    p = NaN;
                 else
                     phaseMean(iParticipant, iPlot+iCompare-1, iSession) = rad2deg(phaseMean(iParticipant, iPlot+iCompare-1, iSession));
                     SEM = circ_std(phaseAngle) / sqrt(length(phaseAngle));
                     t = tinv([0.025 0.975], length(phaseAngle)-1);
                     phaseCI(iParticipant, : , iPlot+iCompare-1, iSession) = rad2deg(circ_mean(phaseAngle, [], 1) + t * SEM);
                     noSyncPhase(iParticipant, iPlot+iCompare-1, iSession) = NaN;
-                end            
+                end 
+                pRayleigh(iParticipant, iPlot+iCompare-1, iSession) = p;
            
                 % Phase errors (in rad)
                 phaseError = [];
@@ -98,14 +100,14 @@ for iSession = 1%:length(Sessions)
     end % End Conditions
    
     %% Plot
-%     plotScatter(RVL, Comparisons, Conditions, 'Synchronization Consistency (logit)');    
+    plotScatter(rvl, Comparisons, Conditions, 'Synchronization Consistency', pRayleigh);    
     plotScatter(rvlLogit, Comparisons, Conditions, 'Synchronization Consistency');    
     plotScatter(phaseMean, Comparisons, Conditions, 'Synchronization Accuracy (°)'); %, noSyncPhase
     plotScatter(IBI, Comparisons, Conditions, 'Interbeat Interval Deviations');
     plotScatterCI(asyncMean, asyncCI, Comparisons, Conditions, 'Asynchronies (ms)');
     plotScatterCI(phaseMean, phaseCI, Comparisons, Conditions, 'Phase Angles (°)');
     plotScatter(phaseErrorMean, Comparisons, Conditions, 'Synchronization Error (°)'); %, noSyncError
-    plotScatter_doubleY(rvl, rvlLogit, Comparisons, Conditions, {'Synchronization Consistency (vector length)'; 'Synchronization Consistency (logit)'});      
+%     plotScatter_doubleY(rvl, rvlLogit, Comparisons, Conditions, {'Synchronization Consistency (vector length)'; 'Synchronization Consistency (logit)'});      
 
     % Save
 %     saveas(figure(1), [pathResults '/All/' Sessions{iSession} '/Sync/fig_syncConsistency_vectorLength.png'])

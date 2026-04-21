@@ -29,7 +29,7 @@ kineticFilt = filtfilt(f,e,Kinetics);
 % plot(kineticFilt)
 
 % Find envelop peaks
-peakThreshold = 30; %40
+peakThreshold = 40; %40
 [pksFilt, locsFilt] = findpeaks(kineticFilt, 'MinPeakDistance', 800);
 
 % % Find first stepOnset and remove peaks before first stepOnset
