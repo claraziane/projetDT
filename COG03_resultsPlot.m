@@ -11,8 +11,8 @@ Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; '
                 'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'; '02'};
 
-Conditions   = { 'stimTap_DT'; 'syncTap_DT'; 'stimWalk_DT'; 'syncWalk_DT'}; %'stimRest_DT';
-xLabels      = {    'stimTap';    'syncTap';    'stimWalk';    'syncWalk'}; %'stimRest';   
+Conditions   = {'stimRest_DT'; 'stimTap_DT'; 'syncTap_DT'; 'stimWalk_DT'; 'syncWalk_DT'}; %
+xLabels      = { 'stimRest';      'stimTap';    'syncTap';    'stimWalk';    'syncWalk'}; %
 Comparisons = {'DT'};
 
 for iSession = 1%:length(Sessions)

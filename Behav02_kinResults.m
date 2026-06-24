@@ -12,7 +12,7 @@ Participants = {'P01'; 'P02'; 'P03'; 'P04'; 'P07'; 'P08'; 'P09'; 'P10'; 'P11'; '
                 'P38'; 'P39'; 'P40'; 'P41'; 'P42'; 'P43'; 'P44'; 'P45'};
 Sessions     = {'01'; '02'};
 
-Conditions   = {'stimTap'; 'syncTap'; 'stimWalk'; 'syncWalk'}; % 'noneTap'; 'noneWalk'; 
+Conditions   = { 'noneTap'; 'stimTap'; 'syncTap'; 'noneWalk';  'stimWalk'; 'syncWalk'}; % 
 Comparisons  = {'ST'; 'DT'};
 
 for iSession = 1%:length(Sessions)
@@ -24,6 +24,7 @@ for iSession = 1%:length(Sessions)
     cadence    = nan(length(Participants),length(Conditions)*length(Comparisons));
     stepLength = nan(length(Participants),length(Conditions)*length(Comparisons));
     lengthCV   = nan(length(Participants),length(Conditions)*length(Comparisons));
+    autoCor    = nan(length(Participants),length(Conditions)*length(Comparisons));
 
     for iCondition = 1:length(Conditions)
 
@@ -40,8 +41,10 @@ for iSession = 1%:length(Sessions)
 
                 if  strcmpi(Conditions{iCondition}(1:4), 'none') == 1 && strcmpi(Comparisons{iCompare}, 'DT') == 1 %There is no DT condition in the none conditions
                 else
-                    imiCV(iParticipant, iPlot+iCompare-1) = resultsBehav.(condName).imiCV;
+                    imiCV(iParticipant, iPlot+iCompare-1)   = resultsBehav.(condName).imiCV;
                     imiMean(iParticipant, iPlot+iCompare-1) = resultsBehav.(condName).imiMean;
+                    [acf,lags,bounds] = autocorr(resultsBehav.(condName).IMI, 'NumLags', 1);
+                    autoCor(iParticipant, iPlot+iCompare-1) = acf(2);
 
                     if strcmpi(Conditions{iCondition}(5:7), 'Tap')
                         cadence(iParticipant, iPlot+iCompare-1) = Taps.(condName).cadence;
@@ -79,6 +82,8 @@ for iSession = 1%:length(Sessions)
     plotScatter(cadence, Comparisons, Conditions, 'Cadence (movements per minute)');
 %     plotScatter(stepLength, Comparisons, Conditions(4:end), 'Step Length (mm)');
 %     plotScatter(lengthCV, Comparisons, Conditions(4:end), 'Coefficient of Variation_{stepLength}');
+    plotScatter(autoCor, Comparisons, Conditions, 'Lag-1 Autocorrelation');
+
 
 
     % Save

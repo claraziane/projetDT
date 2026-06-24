@@ -27,7 +27,7 @@ corrType = 'Spearman';
 for iSession = 1%:length(Sessions)
     iFig = 1;
 
-    for iX = 1:3%length(varX)
+    for iX = 2%length(varX)
         xLabel = (xLabels{iX});
 
         for iY = 4
