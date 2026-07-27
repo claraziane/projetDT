@@ -27,7 +27,7 @@ Conditions   = {'noneRestST'; 'stimRestST'; 'stimRestDT';...
 sFWHM = .3; % FWHM of stim frequency
 
 eeglab;
-for iParticipant = 10%1:length(Participants)
+for iParticipant = 1:length(Participants)
     disp(Participants{iParticipant})
 
     for iSession = length(Sessions)
@@ -35,13 +35,13 @@ for iParticipant = 10%1:length(Participants)
         % Load data
         load([pathPreproc Participants{iParticipant} '/'  Sessions{iSession} '/Behavioural/dataRAC']);
 
-        if ~exist([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'file')
-            load([pathPreproc '/03_Preprocessing/chans2interp.mat'])
-        else
-            load([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'])
-        end
+%         if ~exist([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'], 'file')
+%             load([pathPreproc '/03_Preprocessing/chans2interp.mat'])
+%         else
+%             load([pathPreproc '/03_Preprocessing/' Participants{iParticipant} '/'  Sessions{iSession} '/chans2interp.mat'])
+%         end
 
-        for iCondition = 1%length(Conditions)
+        for iCondition = 2:length(Conditions)
 
             % Create folder for participant's results if does not exist
             pathParticipant = fullfile(pathResults, Participants{iParticipant}, '/', Sessions{iSession}, '/vBrainOnly/', Conditions{iCondition}, '/');

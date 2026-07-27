@@ -27,7 +27,7 @@ compTopo       = nan(64, length(Participants),length(Conditions)*length(Comparis
 Power          = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
 phaseMean      = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
 phaseCI        = nan(length(Participants), 2, length(Conditions)*length(Comparisons),length(Sessions));
-ITPC           = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
+phaseCoupling  = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
 stabilityIndex = nan(length(Participants),length(Conditions)*length(Comparisons),length(Sessions));
 
 eeglab;
@@ -53,7 +53,7 @@ for iSession = length(Sessions)
                    Power(iParticipant, iPlot+iCompare-1, iSession) = NaN;
                     phaseMean(iParticipant, iPlot+iCompare-1, iSession) = NaN;
                     phaseCI(iParticipant, :, iPlot+iCompare-1, iSession) = NaN;
-                    ITPC(iParticipant, iPlot+iCompare-1, iSession) = NaN;
+                    phaseCoupling(iParticipant, iPlot+iCompare-1, iSession) = NaN;
                     stabilityIndex(iParticipant, iPlot+iCompare-1, iSession) = NaN;
 
                 else
@@ -80,10 +80,10 @@ for iSession = length(Sessions)
                     t = tinv([0.025 0.975], length(Phase)-1);
                     phaseCI(iParticipant, :, iPlot+iCompare-1, iSession) = resultsEEG.(condName).phaseMean + t * SEM;
 
-                    % ITPC
+                    % Phase coupling
                     phaseR = [];
                     phaseR = resultsEEG.(condName).phaseR;
-                    ITPC(iParticipant, iPlot+iCompare-1, iSession) = log(phaseR ./ (1-phaseR));
+                    phaseCoupling(iParticipant, iPlot+iCompare-1, iSession) = log(phaseR ./ (1-phaseR));
 
                     % Stability Index
                     stabilityIndex(iParticipant, iPlot+iCompare-1, iSession) = resultsEEG.(condName).stabilityIndex;
@@ -119,13 +119,13 @@ for iSession = length(Sessions)
 
     %% Remove outliers
     [Power] = removeOutliers(Power);
-    [ITPC] = removeOutliers(ITPC);
+    [phaseCoupling] = removeOutliers(phaseCoupling);
     [stabilityIndex] = removeOutliers(stabilityIndex);
 
     %% Plot
     plotScatter(Power, Comparisons, Conditions, 'Power (SNR)');
     plotScatterCI(phaseMean, phaseCI, Comparisons, Conditions, 'Phase (rad)');
-    plotScatter(ITPC, Comparisons, Conditions, 'Phase Coupling (logit)');
+    plotScatter(phaseCoupling, Comparisons, Conditions, 'Phase Coupling (logit)');
     plotScatter(stabilityIndex, Comparisons, Conditions, 'Stability Index (Hz)');
 
     %% Save

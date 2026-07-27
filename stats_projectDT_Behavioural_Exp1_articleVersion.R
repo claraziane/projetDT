@@ -9,7 +9,7 @@ library(pwrss)
 library(simr)
 
 # Load result table
-DATA <- read.csv("/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Articles/articleBehavioural/SUBMITTED/PsyArXiv/dataTable_EXP1_IMI_CV_syncConsistency.csv")
+DATA <- read.csv("/Users/claraziane/Library/CloudStorage/OneDrive-UniversitedeMontreal/Projets/projetDT/Articles/articleBehavioural/SUBMITTED/PsyArXiv/dataTable_EXP1_IMI_CV_syncConsistency_Cognition.csv")
 head(DATA)
 
 DATA$Movement <- factor(DATA$Movement, levels = c("tapping", "walking")) 
